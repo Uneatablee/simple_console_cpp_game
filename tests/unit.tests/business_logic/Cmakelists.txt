@@ -1,0 +1,9 @@
+project(maze_game_tests)
+
+add_executable(maze_game_tests main_test.cpp)
+
+target_include_directories(maze_game_tests PRIVATE ../../../lib/FakeIt/single_header/catch)
+
+target_link_libraries(maze_game_tests PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(maze_game_tests PUBLIC maze_game_library)
+

@@ -1,0 +1,4 @@
+project(maze_game_main)
+
+add_executable(maze_game_main main.cpp)
+target_link_libraries(maze_game_main PRIVATE maze_game_library)

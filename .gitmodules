@@ -1,3 +1,0 @@
-[submodule "lib/FakeIt"]
-	path = lib/FakeIt
-	url = git@github.com:eranpeer/FakeIt.git

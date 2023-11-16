@@ -1,8 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
 #include "Tscreen.hpp"
+#include "Tlevel.hpp"
+#include "Tplayer.hpp"
+#include "fakeit.hpp"
 #include <memory>
 
-TEST_CASE("ScreenIsCreated_IsAbleToOutput")
+TEST_CASE("Screen_IsCreated_IsAbleToOutput")
 {
     //Arrange
     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
@@ -17,7 +20,7 @@ TEST_CASE("ScreenIsCreated_IsAbleToOutput")
     REQUIRE(result == expected_result);
 }
 
-TEST_CASE("WhenGetCharIsCalled_ReturnsProperString")
+TEST_CASE("WhenGetChar_IsCalled_ReturnsProperString")
 {
     //Arrange
     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
@@ -32,7 +35,7 @@ TEST_CASE("WhenGetCharIsCalled_ReturnsProperString")
     REQUIRE(result == expected_result);
 }
 
-TEST_CASE("WhenScreenReplaceIsCalled_ReplaceCharacter")
+TEST_CASE("WhenScreenReplace_IsCalled_ReplaceCharacter")
 {
     //Arrange
     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
@@ -44,4 +47,36 @@ TEST_CASE("WhenScreenReplaceIsCalled_ReplaceCharacter")
     //Assert
     REQUIRE(result == expected_result);
 }
+
+using namespace fakeit;
+Mock<Ilevel> level_mock;
+
+
+TEST_CASE("WhenPlayer_IsCreated_ItsPossibleToAssignHimLevel")
+{
+
+    //Arrange
+
+    When(Method(level_mock,get_starting_position)).Return(Tposition(0,0));
+    Ilevel* level_mock_temp = &level_mock.get();
+
+    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>();
+    main_player -> assign_level(std::shared_ptr<Ilevel>(level_mock_temp));
+
+    //Act
+
+    auto result = main_player -> get_current_level();
+    auto expected_result = nullptr;
+
+    //Assert
+
+    REQUIRE(result != expected_result);
+}
+
+TEST_CASE("WhenAssignLevel_IsCalled_CurrentPositionBecomesStartingPositionFromLevel")
+{
+    //Arrange
+
+}
+
 

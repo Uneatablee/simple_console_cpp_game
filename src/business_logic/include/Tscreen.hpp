@@ -8,8 +8,8 @@ class Tscreen
 protected:
 
     std::string screen_output;
-    const unsigned int width = 121;
-    const unsigned int height = 40;
+    unsigned int width = 151;
+    unsigned int height = 40;
 
 public:
 

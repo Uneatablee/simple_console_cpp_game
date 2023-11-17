@@ -2,25 +2,25 @@
 
 Tlevel::Tlevel(std::shared_ptr<std::string> loaded_map)
 {
-    map = loaded_map;
+    m_map = loaded_map;
 }
 
 Tlevel::Tlevel()
 {
-    map = nullptr;
+    m_map = nullptr;
 }
 
 std::shared_ptr<std::string> Tlevel::get_level_map()
 {
-    return map;
+    return m_map;
 }
 
-bool Tlevel::is_next_pixel_wall(int position_x, int position_y)
+bool Tlevel::is_next_pixel_wall(Tposition position)
 {
     return true;
 }
 
 Tposition Tlevel::get_starting_position()
 {
-    return starting_position;
+    return m_starting_position;
 }

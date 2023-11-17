@@ -28,7 +28,7 @@ TEST_CASE("WhenGetChar_IsCalled_ReturnsProperString")
     //Act
 
     std::string expected_result = ".";
-    std::string result = main_screen -> get_char(20,35);
+    std::string result = main_screen -> get_char(Tposition(20,35));
 
     //Assert
 
@@ -42,7 +42,7 @@ TEST_CASE("WhenScreenReplace_IsCalled_ReplaceCharacter")
 
     //Act
     bool expected_result = true;
-    bool result = main_screen -> screen_replace("Text", 10, 4);
+    bool result = main_screen -> screen_replace("Text", Tposition(10,4));
 
     //Assert
     REQUIRE(result == expected_result);

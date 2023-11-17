@@ -1,11 +1,11 @@
 #pragma once
 
-class Tposition
+struct Tposition
 {
 public:
 
-    int position_x;
-    int position_y;
+    int m_position_x;
+    int m_position_y;
 
     Tposition() = default;
     ~Tposition() = default;
@@ -15,5 +15,5 @@ public:
 
     Tposition(Tposition&& object) = default;
     Tposition& operator=(Tposition&& object) = default;
-    Tposition(int x, int y) : position_x(x), position_y(y){}
+    Tposition(int x, int y) : m_position_x(x), m_position_y(y){}
 };

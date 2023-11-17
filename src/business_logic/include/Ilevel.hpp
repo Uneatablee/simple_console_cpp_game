@@ -19,6 +19,6 @@ public:
 
     Ilevel(std::shared_ptr<std::string> loaded_map);
     virtual std::shared_ptr<std::string> get_level_map() = 0;
-    virtual bool is_next_pixel_wall(int position_x, int position_y) = 0;
+    virtual bool is_next_pixel_wall(Tposition position) = 0;
     virtual Tposition get_starting_position() = 0;
 };

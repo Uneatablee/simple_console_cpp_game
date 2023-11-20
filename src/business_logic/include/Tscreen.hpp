@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-class Tposition;
+struct Tposition;
 
 class Tscreen
 {

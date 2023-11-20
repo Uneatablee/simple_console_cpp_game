@@ -5,7 +5,7 @@
 
 #include "Ilevel.hpp"
 
-class Tposition;
+struct Tposition;
 
 class Tlevel : virtual public Ilevel
 {

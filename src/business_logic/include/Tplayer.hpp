@@ -1,8 +1,9 @@
 #pragma once
 #include "Ientity.hpp"
 #include "Ilevel.hpp"
-#include "Tposition.hpp"
 #include <memory>
+
+struct Tposition;
 
 class Tplayer : virtual public Ientity
 {
@@ -21,4 +22,5 @@ public:
     bool move(Movement) override;
     std::string get_name() override;
     std::shared_ptr<Ilevel> get_current_level() override;
+    Tposition get_current_position() override;
 };

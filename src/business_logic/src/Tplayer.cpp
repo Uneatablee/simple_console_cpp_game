@@ -1,4 +1,5 @@
 #include "../include/Tplayer.hpp"
+#include "../include/Tposition.hpp"
 
 Tplayer::Tplayer()
 {
@@ -18,6 +19,21 @@ bool Tplayer::assign_level(std::shared_ptr<Ilevel> current_level_pointer)
 
 bool Tplayer::move(Movement movement)
 {
+    switch(movement)
+    {
+        case Movement::Up:
+            m_current_position.m_position_y += 1;
+            break;
+        case Movement::Down:
+            m_current_position.m_position_y -= 1;
+            break;
+        case Movement::Left:
+            m_current_position.m_position_x -= 1;
+            break;
+        case Movement::Right:
+            m_current_position.m_position_x += 1;
+            break;
+    }
 
     return true;
 }
@@ -30,4 +46,9 @@ std::string Tplayer::get_name()
 std::shared_ptr<Ilevel> Tplayer::get_current_level()
 {
     return m_current_level;
+}
+
+Tposition Tplayer::get_current_position()
+{
+    return m_current_position;
 }

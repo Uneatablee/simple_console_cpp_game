@@ -5,7 +5,6 @@
 #include <memory>
 
 struct Tposition;
-class Tscreen;
 
 class Tplayer : virtual public Ientity, virtual public Idrawable
 {
@@ -25,6 +24,6 @@ public:
     std::string get_name() override;
     std::shared_ptr<Ilevel> get_current_level() override;
     Tposition get_current_position() override;
-    bool draw(const std::shared_ptr<Tscreen>& screen, Tposition position) override;
+    bool draw(Tposition position) override;
     bool change_current_position(Tposition position) override;
 };

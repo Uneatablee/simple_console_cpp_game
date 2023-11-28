@@ -52,9 +52,9 @@ Tposition Tplayer::get_current_position()
     return m_current_position;
 }
 
-bool Tplayer::draw(const std::shared_ptr<Tscreen>& screen, Tposition position)
+bool Tplayer::draw(Tposition position)
 {
-    m_drawer -> draw(screen, position);
+    m_drawer -> draw(position);
 
     return true;
 }

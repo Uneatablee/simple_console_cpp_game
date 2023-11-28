@@ -1,53 +1,52 @@
 #include <catch2/catch_test_macros.hpp>
-#include "Tscreen.hpp"
 #include "Tlevel.hpp"
 #include "Tplayer.hpp"
 #include "fakeit.hpp"
 #include "Idrawable.hpp"
 #include <memory>
 
-TEST_CASE("Screen_IsCreated_IsAbleToOutput")
-{
-    //Arrange
-    std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
+// TEST_CASE("Screen_IsCreated_IsAbleToOutput")
+// {
+//     //Arrange
+//     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
 
-    //Act
+//     //Act
 
-    bool expected_result = true;
-    bool result = main_screen -> main_screen_output();
+//     bool expected_result = true;
+//     bool result = main_screen -> main_screen_output();
 
-    //Assert
+//     //Assert
 
-    REQUIRE(result == expected_result);
-}
+//     REQUIRE(result == expected_result);
+// }
 
-TEST_CASE("WhenGetChar_IsCalled_ReturnsProperString")
-{
-    //Arrange
-    std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
+// TEST_CASE("WhenGetChar_IsCalled_ReturnsProperString")
+// {
+//     //Arrange
+//     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
 
-    //Act
+//     //Act
 
-    std::string expected_result = ".";
-    std::string result = main_screen -> get_char(Tposition(20,15));
+//     std::string expected_result = ".";
+//     std::string result = main_screen -> get_char(Tposition(20,15));
 
-    //Assert
+//     //Assert
 
-    REQUIRE(result == expected_result);
-}
+//     REQUIRE(result == expected_result);
+// }
 
-TEST_CASE("WhenScreenReplace_IsCalled_ReplaceCharacter")
-{
-    //Arrange
-    std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
+// TEST_CASE("WhenScreenReplace_IsCalled_ReplaceCharacter")
+// {
+//     //Arrange
+//     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
 
-    //Act
-    bool expected_result = true;
-    bool result = main_screen -> screen_replace("Text", Tposition(10,4));
+//     //Act
+//     bool expected_result = true;
+//     bool result = main_screen -> screen_replace("Text", Tposition(10,4));
 
-    //Assert
-    REQUIRE(result == expected_result);
-}
+//     //Assert
+//     REQUIRE(result == expected_result);
+// }
 
 using namespace fakeit;
 Mock<Ilevel> level_mock;

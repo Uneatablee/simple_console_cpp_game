@@ -7,7 +7,6 @@
 #include <chrono>
 
 //Library definitions
-#include "../business_logic/include/Tscreen.hpp"
 #include "../business_logic/include/Tplayer.hpp"
 #include "../business_logic/include/Idrawable.hpp"
 #include "player_drawing_module.hpp"

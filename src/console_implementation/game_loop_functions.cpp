@@ -10,16 +10,14 @@ bool gameloop()
 
     scoreboard_window = window_scoreboard_output();
     gameplay_window = window_gameplay_output();
-    std::thread get_input(input_processing, main_player);
 
     while(true)
     {
-        //get_input thread as input_processing part of the loop?
+        input_processing(main_player);  // --->  get_input thread as input_processing part of the loop?
         //update(); --> one step forward all movement mechanics
         //render(); --> rendering with delta time
     }
 
-    get_input.join();
     return false;
 }
 
@@ -29,8 +27,8 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
     int input;
     bool exit = false;
 
-    while(!exit)
-    {
+    //while(!exit)
+    //{
         input = getchar();
         switch(input)
         {
@@ -68,7 +66,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
             default:
                 break;
         }
-    }
+    //}
 
     return true;
 }

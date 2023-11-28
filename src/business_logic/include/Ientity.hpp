@@ -31,6 +31,7 @@ public:
     virtual bool assign_level(std::shared_ptr<Ilevel> current_level) = 0;
     virtual std::shared_ptr<Ilevel> get_current_level() = 0;
     virtual Tposition get_current_position() = 0;
+    virtual bool change_current_position(Tposition position) = 0;
 
 
 };

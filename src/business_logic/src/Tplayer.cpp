@@ -1,13 +1,12 @@
 #include "../include/Tplayer.hpp"
 #include "../include/Tposition.hpp"
 
-Tplayer::Tplayer()
+Tplayer::Tplayer(std::string init_name, const std::shared_ptr<Idrawable>& drawer)
 {
-    m_name = "unnamed";
+    m_drawer = drawer;
+    m_name = init_name;
     m_current_position = Tposition(0,0);
 }
-
-Tplayer::Tplayer(std::string init_name) : m_name(init_name){}
 
 bool Tplayer::assign_level(std::shared_ptr<Ilevel> current_level_pointer)
 {
@@ -51,4 +50,17 @@ std::shared_ptr<Ilevel> Tplayer::get_current_level()
 Tposition Tplayer::get_current_position()
 {
     return m_current_position;
+}
+
+bool Tplayer::draw(const std::shared_ptr<Tscreen>& screen, Tposition position)
+{
+    m_drawer -> draw(screen, position);
+
+    return true;
+}
+
+bool Tplayer::change_current_position(Tposition position)
+{
+    m_current_position = position;
+    return true;
 }

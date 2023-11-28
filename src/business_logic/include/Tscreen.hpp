@@ -10,12 +10,13 @@ class Tscreen
 protected:
 
     std::string m_screen_output;
-    unsigned int m_width = 151;
-    unsigned int m_height = 40;
+    char m_background_sign;
+    unsigned int m_width = 71;
+    unsigned int m_height = 30;
 
 public:
 
-    Tscreen();
+    Tscreen(char p_background_sign = '.');
     ~Tscreen() = default;
 
     Tscreen(const Tscreen& object) = default;
@@ -27,4 +28,6 @@ public:
     bool main_screen_output();
     std::string get_char(Tposition position);
     bool screen_replace(std::string replacement,Tposition position);
+    bool refresh();
+    bool clear_content();
 };

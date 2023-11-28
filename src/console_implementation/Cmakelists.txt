@@ -3,7 +3,8 @@ project(maze_game_main)
 find_package(Curses REQUIRED)
 include_directories(maze_game_main ${CURSES_INCLUDE_DIR})
 
-add_executable(maze_game_main main.cpp)
+add_executable(maze_game_main main.cpp game_loop_functions.cpp player_drawing_module.cpp)
+
 target_link_libraries(maze_game_main PRIVATE maze_game_library)
 target_link_libraries(maze_game_main PRIVATE ${CURSES_LIBRARY})
 install(TARGETS maze_game_main RUNTIME DESTINATION ${BIN_DIR})

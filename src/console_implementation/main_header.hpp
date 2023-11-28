@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <chrono>
 
 //Library definitions
 #include "../business_logic/include/Tscreen.hpp"
@@ -14,4 +15,6 @@
 //Global game loop functions
 
 bool input_processing(const std::shared_ptr<Ientity>& player);
-WINDOW* window_game_output();
+WINDOW* window_gameplay_output();
+WINDOW* window_scoreboard_output();
+bool gameloop();

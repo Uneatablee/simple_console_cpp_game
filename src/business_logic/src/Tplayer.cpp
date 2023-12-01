@@ -1,5 +1,6 @@
 #include "../include/Tplayer.hpp"
 #include "../include/Tposition.hpp"
+#include "../../console_implementation/Idrawable.hpp"
 
 Tplayer::Tplayer(std::string init_name, const std::shared_ptr<Idrawable>& drawer)
 {
@@ -55,7 +56,6 @@ Tposition Tplayer::get_current_position()
 bool Tplayer::draw(Tposition position)
 {
     m_drawer -> draw(position);
-
     return true;
 }
 

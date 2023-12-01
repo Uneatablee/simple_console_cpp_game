@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "../business_logic/include/Idrawable.hpp"
+#include "Idrawable.hpp"
 
 struct Tposition;
 

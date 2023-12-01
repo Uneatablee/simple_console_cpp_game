@@ -38,7 +38,6 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
                 break;
             case 'w':
                 player -> move(Ientity::Movement::Up);
-                std:: cout << "w";
                 break;
 
             case 'S':

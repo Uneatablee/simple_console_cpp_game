@@ -1,12 +1,12 @@
 #pragma once
 #include "Ientity.hpp"
 #include "Ilevel.hpp"
-#include "Idrawable.hpp"
 #include <memory>
 
 struct Tposition;
+class Idrawable;
 
-class Tplayer : virtual public Ientity, virtual public Idrawable
+class Tplayer : virtual public Ientity
 {
 private:
 
@@ -24,6 +24,7 @@ public:
     std::string get_name() override;
     std::shared_ptr<Ilevel> get_current_level() override;
     Tposition get_current_position() override;
-    bool draw(Tposition position) override;
     bool change_current_position(Tposition position) override;
+
+    bool draw(Tposition position);
 };

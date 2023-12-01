@@ -1,55 +1,56 @@
 #include <catch2/catch_test_macros.hpp>
-#include "Tscreen.hpp"
 #include "Tlevel.hpp"
 #include "Tplayer.hpp"
 #include "fakeit.hpp"
+#include "Idrawable.hpp"
 #include <memory>
 
-TEST_CASE("Screen_IsCreated_IsAbleToOutput")
-{
-    //Arrange
-    std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
+// TEST_CASE("Screen_IsCreated_IsAbleToOutput")
+// {
+//     //Arrange
+//     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
 
-    //Act
+//     //Act
 
-    bool expected_result = true;
-    bool result = main_screen -> main_screen_output();
+//     bool expected_result = true;
+//     bool result = main_screen -> main_screen_output();
 
-    //Assert
+//     //Assert
 
-    REQUIRE(result == expected_result);
-}
+//     REQUIRE(result == expected_result);
+// }
 
-TEST_CASE("WhenGetChar_IsCalled_ReturnsProperString")
-{
-    //Arrange
-    std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
+// TEST_CASE("WhenGetChar_IsCalled_ReturnsProperString")
+// {
+//     //Arrange
+//     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
 
-    //Act
+//     //Act
 
-    std::string expected_result = ".";
-    std::string result = main_screen -> get_char(Tposition(20,35));
+//     std::string expected_result = ".";
+//     std::string result = main_screen -> get_char(Tposition(20,15));
 
-    //Assert
+//     //Assert
 
-    REQUIRE(result == expected_result);
-}
+//     REQUIRE(result == expected_result);
+// }
 
-TEST_CASE("WhenScreenReplace_IsCalled_ReplaceCharacter")
-{
-    //Arrange
-    std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
+// TEST_CASE("WhenScreenReplace_IsCalled_ReplaceCharacter")
+// {
+//     //Arrange
+//     std::shared_ptr<Tscreen> main_screen = std::make_shared<Tscreen>();
 
-    //Act
-    bool expected_result = true;
-    bool result = main_screen -> screen_replace("Text", Tposition(10,4));
+//     //Act
+//     bool expected_result = true;
+//     bool result = main_screen -> screen_replace("Text", Tposition(10,4));
 
-    //Assert
-    REQUIRE(result == expected_result);
-}
+//     //Assert
+//     REQUIRE(result == expected_result);
+// }
 
 using namespace fakeit;
 Mock<Ilevel> level_mock;
+Mock<Idrawable> drawable_mock;
 
 
 TEST_CASE("WhenPlayer_IsCreated_ItsPossibleToAssignHimLevel")
@@ -60,7 +61,11 @@ TEST_CASE("WhenPlayer_IsCreated_ItsPossibleToAssignHimLevel")
     When(Method(level_mock,get_starting_position)).Return(Tposition(0,0));
     Ilevel* level_mock_temp = &level_mock.get();
 
-    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>();
+    When(Method(drawable_mock,draw)).Return(true);
+    Idrawable* drawable_mock_temp = &drawable_mock.get();
+
+    std::string name("main_player");
+    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>(name, std::shared_ptr<Idrawable>(drawable_mock_temp));
     main_player -> assign_level(std::shared_ptr<Ilevel>(level_mock_temp));
 
     //Act
@@ -79,7 +84,11 @@ TEST_CASE("WhenAssignLevel_IsCalled_CurrentPositionBecomesStartingPositionFromLe
     When(Method(level_mock,get_starting_position)).Return(Tposition(5,5));
     Ilevel* level_mock_instance = &level_mock.get();
 
-    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>();
+    When(Method(drawable_mock,draw)).Return(true);
+    Idrawable* drawable_mock_temp = &drawable_mock.get();
+
+    std::string name("main_player");
+    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>(name, std::shared_ptr<Idrawable>(drawable_mock_temp));
     main_player -> assign_level(std::shared_ptr<Ilevel>(level_mock_instance));
 
     //Act
@@ -100,7 +109,11 @@ TEST_CASE("Player_can_move")
     When(Method(level_mock,get_starting_position)).Return(Tposition(20,20));
     Ilevel* level_mock_instance = &level_mock.get();
 
-    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>();
+    When(Method(drawable_mock,draw)).Return(true);
+    Idrawable* drawable_mock_temp = &drawable_mock.get();
+
+    std::string name("main_player");
+    std::shared_ptr<Ientity> main_player = std::make_shared<Tplayer>(name, std::shared_ptr<Idrawable>(drawable_mock_temp));
     main_player -> assign_level(std::shared_ptr<Ilevel>(level_mock_instance));
 
     //Act

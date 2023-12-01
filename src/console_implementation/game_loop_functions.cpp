@@ -3,23 +3,27 @@
 
 bool gameloop()
 {
-    std::shared_ptr<Tplayer> main_player = std::make_shared<Tplayer>("main_player", std::make_shared<player_drawing_module>());
-    main_player -> change_current_position(Tposition(20,20));
     WINDOW* gameplay_window;
     WINDOW* scoreboard_window;
+    scoreboard_window = initial_window_scoreboard_output();
+    gameplay_window = initial_window_gameplay_output();
 
-    scoreboard_window = window_scoreboard_output();
-    gameplay_window = window_gameplay_output();
+    std::shared_ptr<drawable_player> main_player = std::make_shared<drawable_player>(gameplay_window, "main_player");
+    main_player -> change_current_position(Tposition(20,20));
 
     while(true)
     {
         input_processing(main_player);  // --->  get_input thread as input_processing part of the loop
-        //update(); --> one step forward all movement mechanics
+        update(gameplay_window, main_player); //--> one step forward all movement mechanics
+
         //render(); --> rendering with delta time
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     return false;
+
+    delwin(gameplay_window);
+    delwin(scoreboard_window);
 }
 
 
@@ -72,7 +76,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
     return true;
 }
 
-WINDOW* window_gameplay_output()
+WINDOW* initial_window_gameplay_output()
 {
     WINDOW* new_window;
 
@@ -88,7 +92,7 @@ WINDOW* window_gameplay_output()
     return new_window;
 }
 
-WINDOW* window_scoreboard_output()
+WINDOW* initial_window_scoreboard_output()
 {
     WINDOW* new_window;
 
@@ -102,4 +106,11 @@ WINDOW* window_scoreboard_output()
     wrefresh(new_window);
 
     return new_window;
+}
+
+void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_player)
+{
+    main_player -> draw(main_player -> get_current_position());
+    wmove(operating_window, 0, 0);
+    wrefresh(operating_window);
 }

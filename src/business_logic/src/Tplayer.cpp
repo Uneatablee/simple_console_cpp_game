@@ -1,9 +1,8 @@
 #include "../include/Tplayer.hpp"
 #include "../include/Tposition.hpp"
 
-Tplayer::Tplayer(std::string init_name, const std::shared_ptr<Idrawable>& drawer)
+Tplayer::Tplayer(std::string init_name)
 {
-    m_drawer = drawer;
     m_name = init_name;
     m_current_position = Tposition(0,0);
 }
@@ -21,10 +20,10 @@ bool Tplayer::move(Movement movement)
     switch(movement)
     {
         case Movement::Up:
-            m_current_position.m_position_y += 1;
+            m_current_position.m_position_y -= 1;
             break;
         case Movement::Down:
-            m_current_position.m_position_y -= 1;
+            m_current_position.m_position_y += 1;
             break;
         case Movement::Left:
             m_current_position.m_position_x -= 1;
@@ -50,13 +49,6 @@ std::shared_ptr<Ilevel> Tplayer::get_current_level()
 Tposition Tplayer::get_current_position()
 {
     return m_current_position;
-}
-
-bool Tplayer::draw(Tposition position)
-{
-    m_drawer -> draw(position);
-
-    return true;
 }
 
 bool Tplayer::change_current_position(Tposition position)

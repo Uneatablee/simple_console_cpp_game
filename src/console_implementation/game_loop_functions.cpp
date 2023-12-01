@@ -13,9 +13,10 @@ bool gameloop()
 
     while(true)
     {
-        input_processing(main_player);  // --->  get_input thread as input_processing part of the loop?
+        input_processing(main_player);  // --->  get_input thread as input_processing part of the loop
         //update(); --> one step forward all movement mechanics
         //render(); --> rendering with delta time
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     return false;
@@ -37,6 +38,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
                 break;
             case 'w':
                 player -> move(Ientity::Movement::Up);
+                std:: cout << "w";
                 break;
 
             case 'S':

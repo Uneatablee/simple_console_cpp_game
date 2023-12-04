@@ -2,7 +2,6 @@
 #include "Ilevel.hpp"
 #include "Tplayer.hpp"
 #include "fakeit.hpp"
-#include "../../../src/console_implementation/Idrawable.hpp"
 #include <memory>
 
 // TEST_CASE("Screen_IsCreated_IsAbleToOutput")

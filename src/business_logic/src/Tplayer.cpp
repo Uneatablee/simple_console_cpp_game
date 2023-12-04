@@ -1,5 +1,5 @@
 #include "../include/Tplayer.hpp"
-#include "../include/Tposition.hpp"
+#include "../include/Ilevel.hpp"
 
 Tplayer::Tplayer(std::string init_name)
 {
@@ -17,6 +17,11 @@ bool Tplayer::assign_level(std::shared_ptr<Ilevel> current_level_pointer)
 
 bool Tplayer::move(Movement movement)
 {
+
+    bool is_movement_possible = m_current_level -> is_next_pixel_wall(movement, this -> m_current_position);
+
+    if(is_movement_possible) return false;
+
     switch(movement)
     {
         case Movement::Up:

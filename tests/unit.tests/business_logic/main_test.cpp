@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "Tlevel.hpp"
+#include "Ilevel.hpp"
 #include "Tplayer.hpp"
 #include "fakeit.hpp"
 #include "../../../src/console_implementation/Idrawable.hpp"
@@ -99,6 +99,7 @@ TEST_CASE("Player_can_move")
     //Arrange
 
     When(Method(level_mock,get_starting_position)).Return(Tposition(20,20));
+    When(Method(level_mock,is_next_pixel_wall)).Return(false);
     Ilevel* level_mock_instance = &level_mock.get();
 
     std::string name("main_player");

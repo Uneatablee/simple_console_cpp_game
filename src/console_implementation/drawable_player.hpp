@@ -11,7 +11,7 @@ class drawable_player : virtual public Idrawable, virtual public Tplayer
 {
 private:
     WINDOW* m_gameplay_window;
-    const char* m_top_body = "O-O";
+    const char* m_top_body =    "O-O";
     const char* m_bottom_body = "|~|";
 public:
 

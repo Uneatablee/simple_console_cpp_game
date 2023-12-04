@@ -1,5 +1,5 @@
 #include "drawable_player.hpp"
-#include "../business_logic/include/Tposition.hpp"
+#include "Tposition.hpp"
 
 drawable_player::drawable_player(WINDOW* gameplay_window, std::string init_name) : Tplayer(init_name), m_gameplay_window(gameplay_window)
 {

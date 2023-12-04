@@ -10,10 +10,10 @@
 #include <sstream>
 
 //Library definitions
-#include "../business_logic/include/Tplayer.hpp"
+#include "Tplayer.hpp"
 #include "Idrawable.hpp"
 #include "drawable_player.hpp"
-#include "../business_logic/include/Tlevel.hpp"
+#include "Tlevel.hpp"
 
 //Global game loop functions
 

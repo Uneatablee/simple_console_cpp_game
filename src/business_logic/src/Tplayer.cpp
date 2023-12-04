@@ -1,5 +1,5 @@
 #include "../include/Tplayer.hpp"
-#include "../include/Tposition.hpp"
+#include "../include/Ilevel.hpp"
 
 Tplayer::Tplayer(std::string init_name)
 {

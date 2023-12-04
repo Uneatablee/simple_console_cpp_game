@@ -11,14 +11,20 @@ class Tlevel : virtual public Ilevel
 {
 private:
 
-    std::shared_ptr<std::string> m_map;
+    std::string m_map;
     Tposition m_starting_position;
+    unsigned int m_current_map_height;
+    unsigned int m_current_map_width;
 
 public:
 
-    Tlevel();
-    Tlevel(std::shared_ptr<std::string> p_loaded_map);
-    std::shared_ptr<std::string> get_level_map() override;
+    Tlevel() = default;
+    ~Tlevel() override = default;
+
+    Tlevel(std::string p_loaded_map, unsigned int map_height, unsigned int map_width);
     bool is_next_pixel_wall(Tposition position) override;
     Tposition get_starting_position() override;
+    unsigned int get_current_map_height() override;
+    unsigned int get_current_map_width() override;
+    std::string get_current_map_layout() override;
 };

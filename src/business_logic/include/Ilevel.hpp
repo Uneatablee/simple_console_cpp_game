@@ -8,8 +8,8 @@ class Ilevel
 {
 public:
 
-    Ilevel();
-    virtual ~Ilevel() = 0;
+    Ilevel() = default;
+    virtual ~Ilevel() = default;
 
     Ilevel(const Ilevel& object) = default;
     Ilevel& operator=(const Ilevel& object) = default;
@@ -17,8 +17,9 @@ public:
     Ilevel(Ilevel&& object) = default;
     Ilevel& operator=(Ilevel&& object) = default;
 
-    Ilevel(std::shared_ptr<std::string> loaded_map);
-    virtual std::shared_ptr<std::string> get_level_map() = 0;
     virtual bool is_next_pixel_wall(Tposition position) = 0;
     virtual Tposition get_starting_position() = 0;
+    virtual unsigned int get_current_map_height() = 0;
+    virtual unsigned int get_current_map_width() = 0;
+    virtual std::string get_current_map_layout() = 0;
 };

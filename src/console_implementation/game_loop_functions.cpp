@@ -10,6 +10,7 @@ bool gameloop()
     std::string map_layout = map_converter(map_name, &gameplay_window_height, &gameplay_window_width); //converting file and getting single string, height and width of gamepolay window
 
     std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout, gameplay_window_height, gameplay_window_width);
+    starting_level -> set_starting_position(Tposition(20,20));
 
     WINDOW* gameplay_window;
     WINDOW* scoreboard_window;
@@ -17,7 +18,7 @@ bool gameloop()
     gameplay_window = initial_window_gameplay_output(starting_level,gameplay_window_height, gameplay_window_width);
 
     std::shared_ptr<drawable_player> main_player = std::make_shared<drawable_player>(gameplay_window, "main_player");
-    main_player -> change_current_position(Tposition(20,20));
+    main_player -> assign_level(starting_level);
 
 
 
@@ -93,7 +94,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
     return exit;
 }
 
-WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, unsigned int height = 40, unsigned int width = 140)
+WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, unsigned int height, unsigned int width)
 {
     WINDOW* new_window;
     const unsigned int startX = 1;
@@ -162,9 +163,8 @@ std::string map_converter(std::string p_file_name, unsigned int* map_height, uns
         map_converted += single_line + "\n";
         height++;
     }
-    *map_width = width;
+    *map_width = width+1;
     *map_height = height;
     file.close();
-
     return map_converted;
 }

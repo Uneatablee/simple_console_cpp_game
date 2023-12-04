@@ -20,6 +20,13 @@ bool Tplayer::move(Movement movement)
 
     bool movement_impossible = m_current_level -> is_next_pixel_wall(movement, this -> m_current_position);
 
+    if(movement_impossible && movement == Movement::Down && m_current_air_state == Air_state::Falling)
+    {
+        m_current_air_state = Air_state::None;
+        m_current_jump_velocity = STARTING_JUMP_VELOCITY;
+        return false;
+    }
+
     if(movement_impossible) return false;
 
     switch(movement)
@@ -65,4 +72,37 @@ bool Tplayer::change_current_position(Tposition position)
 Ientity::Air_state Tplayer::get_current_state()
 {
     return m_current_air_state;
+}
+
+bool Tplayer::jump()
+{
+    for(int i = 0; i < this -> m_current_jump_velocity; i++)
+    {
+        this -> move(Movement::Up);
+    }
+
+    m_current_jump_velocity = m_current_jump_velocity + m_gravity_constance;
+    if(m_current_jump_velocity < 0)
+    {
+        m_current_air_state = Air_state::Falling;
+        m_current_jump_velocity = 0;
+    }
+    return true;
+}
+
+bool Tplayer::fall()
+{
+    for(int i = 0; i < this -> m_current_jump_velocity; i++)
+    {
+        this -> move(Movement::Down);
+    }
+
+    m_current_jump_velocity = m_current_jump_velocity - m_gravity_constance;
+    return true;
+}
+
+bool Tplayer::set_air_state(Air_state state)
+{
+    m_current_air_state = state;
+    return true;
 }

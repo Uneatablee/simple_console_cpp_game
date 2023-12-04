@@ -32,7 +32,7 @@ bool gameloop()
         update(gameplay_window, main_player); //--> one step forward all movement mechanics
 
         //render(); --> rendering with delta time
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     //clearing
@@ -49,23 +49,34 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
 {
     int input;
     bool exit = false;
+    bool only_side_movement_allowed = false;
 
     while(!exit)
     {
+        only_side_movement_allowed = false;
         input = getchar();
+
+        if(player -> get_current_state() == Ientity::Air_state::Jumping || player -> get_current_state() == Ientity::Air_state::Falling)
+        {
+            only_side_movement_allowed = true;
+        }
         switch(input)
         {
             case 'W':
-                player -> move(Ientity::Movement::Up);
+                if(only_side_movement_allowed) break;
+                player -> set_air_state(Ientity::Air_state::Jumping);
                 break;
             case 'w':
-                player -> move(Ientity::Movement::Up);
+                if(only_side_movement_allowed) break;
+                player -> set_air_state(Ientity::Air_state::Jumping);
                 break;
 
             case 'S':
+                if(only_side_movement_allowed) break;
                 player -> move(Ientity::Movement::Down);
                 break;
             case 's':
+                if(only_side_movement_allowed) break;
                 player -> move(Ientity::Movement::Down);
                 break;
 
@@ -82,9 +93,6 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
             case 'd':
                 player -> move(Ientity::Movement::Right);
                 break;
-            case 'p':
-                std::cout <<" , ";
-                std::cout << player ->get_current_position().m_position_x <<", " << player ->get_current_position().m_position_y;
             case char(27):
                 exit = true;
                 break;
@@ -137,9 +145,18 @@ WINDOW* initial_window_scoreboard_output()
 
 void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_player)
 {
-    if((main_player -> get_current_state()) == Ientity::Air_state::Jumping)
-    {
+    Ientity::Air_state current_air_state = main_player -> get_current_state();
 
+    switch(current_air_state)
+    {
+        case Ientity::Air_state::Jumping:
+            main_player -> jump();
+            break;
+        case Ientity::Air_state::Falling:
+            main_player -> fall();
+            break;
+        case Ientity::Air_state::None:
+            break;
     }
 
     main_player -> draw(main_player -> get_current_position());

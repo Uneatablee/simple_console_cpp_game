@@ -2,6 +2,7 @@
 #include "Ientity.hpp"
 #include "Tposition.hpp"
 #include <memory>
+#include <iostream>
 
 struct Tposition;
 class Ilevel;
@@ -10,11 +11,14 @@ class Tplayer : virtual public Ientity
 {
 private:
 
+    #define STARTING_JUMP_VELOCITY 3
+
     Air_state m_current_air_state = Air_state::None;
     Tposition m_current_position;
     std::shared_ptr<Ilevel> m_current_level = nullptr;
     std::string m_name;
-    int m_current_acceleration = 0; //acceleration [rows per loop] ----> imitation of gravity
+    int m_current_jump_velocity = STARTING_JUMP_VELOCITY; //velocity as [rows per loop] ----> jumping and falling speed
+    const double m_gravity_constance = -1;  //acceleration as [(rows/loop)/loop] ----> imitation of gravity
 
 public:
 
@@ -28,4 +32,7 @@ public:
     Tposition get_current_position() override;
     bool change_current_position(Tposition position) override;
     Air_state get_current_state() override;
+    bool jump() override;
+    bool fall() override;
+    bool set_air_state(Air_state state) override;
 };

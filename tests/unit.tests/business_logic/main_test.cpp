@@ -99,6 +99,7 @@ TEST_CASE("Player_can_move")
     //Arrange
 
     When(Method(level_mock,get_starting_position)).Return(Tposition(20,20));
+    When(Method(level_mock,is_next_pixel_wall)).Return(false);
     Ilevel* level_mock_instance = &level_mock.get();
 
     std::string name("main_player");

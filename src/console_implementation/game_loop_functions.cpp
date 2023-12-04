@@ -50,9 +50,11 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
     int input;
     bool exit = false;
     bool only_side_movement_allowed = false;
+    unsigned int step_multiplier = 3;
 
     while(!exit)
     {
+        step_multiplier = 4;
         only_side_movement_allowed = false;
         input = getchar();
 
@@ -60,6 +62,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
         {
             only_side_movement_allowed = true;
         }
+
         switch(input)
         {
             case 'W':
@@ -70,28 +73,33 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
                 if(only_side_movement_allowed) break;
                 player -> set_air_state(Ientity::Air_state::Jumping);
                 break;
-
-            case 'S':
-                if(only_side_movement_allowed) break;
-                player -> move(Ientity::Movement::Down);
-                break;
-            case 's':
-                if(only_side_movement_allowed) break;
-                player -> move(Ientity::Movement::Down);
-                break;
-
             case 'A':
-                player -> move(Ientity::Movement::Left);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Left);
+                    step_multiplier--;
+                }
                 break;
             case 'a':
-                player -> move(Ientity::Movement::Left);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Left);
+                    step_multiplier--;
+                }
                 break;
-
             case 'D':
-                player -> move(Ientity::Movement::Right);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Right);
+                    step_multiplier--;
+                }
                 break;
             case 'd':
-                player -> move(Ientity::Movement::Right);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Right);
+                    step_multiplier--;
+                }
                 break;
             case char(27):
                 exit = true;
@@ -158,6 +166,10 @@ void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_play
         case Ientity::Air_state::None:
             break;
     }
+
+    if((main_player -> get_current_state()) == Ientity::Air_state::None &&
+       (main_player -> move(Ientity::Movement::Down)) == true)
+    main_player -> set_air_state(Ientity::Air_state::Falling);
 
     main_player -> draw(main_player -> get_current_position());
     wmove(operating_window, 0, 0);

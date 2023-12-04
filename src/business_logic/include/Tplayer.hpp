@@ -25,14 +25,14 @@ public:
     Tplayer(std::string init_name);
     ~Tplayer() override = default;
 
-    bool assign_level(std::shared_ptr<Ilevel> p_current_level) override;
     bool move(Movement) override;
-    std::string get_name() override;
-    std::shared_ptr<Ilevel> get_current_level() override;
-    Tposition get_current_position() override;
-    bool change_current_position(Tposition position) override;
-    Air_state get_current_state() override;
     bool jump() override;
     bool fall() override;
+    bool assign_level(std::shared_ptr<Ilevel> p_current_level) override;
+    bool change_current_position(Tposition position) override;
     bool set_air_state(Air_state state) override;
+    std::string get_name() override;
+    Tposition get_current_position() override;
+    std::shared_ptr<Ilevel> get_current_level() override;
+    Air_state get_current_state() override;
 };

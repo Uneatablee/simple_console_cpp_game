@@ -103,6 +103,11 @@ bool Tplayer::fall()
 
 bool Tplayer::set_air_state(Air_state state)
 {
+    if(state == Air_state::Falling)
+    {
+        m_current_jump_velocity = 0;
+    }
+
     m_current_air_state = state;
     return true;
 }

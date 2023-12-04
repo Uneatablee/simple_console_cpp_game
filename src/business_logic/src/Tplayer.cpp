@@ -61,3 +61,8 @@ bool Tplayer::change_current_position(Tposition position)
     m_current_position = position;
     return true;
 }
+
+Ientity::Air_state Tplayer::get_current_state()
+{
+    return m_current_air_state;
+}

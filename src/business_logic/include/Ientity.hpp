@@ -17,6 +17,13 @@ public:
         Right
     };
 
+    enum class Air_state
+    {
+        Jumping,
+        None,
+        Falling
+    };
+
     Ientity() = default;
     virtual ~Ientity() = default;
 
@@ -32,6 +39,6 @@ public:
     virtual std::shared_ptr<Ilevel> get_current_level() = 0;
     virtual Tposition get_current_position() = 0;
     virtual bool change_current_position(Tposition position) = 0;
-
+    virtual Air_state get_current_state() = 0;
 
 };

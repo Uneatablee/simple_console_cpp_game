@@ -6,38 +6,40 @@ bool gameloop()
     unsigned int gameplay_window_height;
     unsigned int gameplay_window_width;
 
+    //map setup
     std::string map_name = "level_1_map.txt";
     std::string map_layout = map_converter(map_name, &gameplay_window_height, &gameplay_window_width); //converting file and getting single string, height and width of gamepolay window
 
+    //starting level setup
     std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout, gameplay_window_height, gameplay_window_width);
     starting_level -> set_starting_position(Tposition(20,20));
 
+    //windows setup
     WINDOW* gameplay_window;
     WINDOW* scoreboard_window;
     scoreboard_window = initial_window_scoreboard_output();
     gameplay_window = initial_window_gameplay_output(starting_level,gameplay_window_height, gameplay_window_width);
 
+    //player setup
     std::shared_ptr<drawable_player> main_player = std::make_shared<drawable_player>(gameplay_window, "main_player");
     main_player -> assign_level(starting_level);
 
-
-
+    //GAME LOOP <------------------->
+    std::thread input_process(input_processing, main_player); //--> extracted from game loop ---> its not blocking game updating
 
     while(true)
     {
-        input_processing(main_player);  // --->  get input_processing as separate thread later
         update(gameplay_window, main_player); //--> one step forward all movement mechanics
 
         //render(); --> rendering with delta time
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-
-
+    //clearing
+    input_process.join();
 
     delwin(gameplay_window);
     delwin(scoreboard_window);
-
 
     return false;
 }
@@ -48,8 +50,8 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
     int input;
     bool exit = false;
 
-    //while(!exit)
-    //{
+    while(!exit)
+    {
         input = getchar();
         switch(input)
         {
@@ -89,7 +91,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
             default:
                 break;
         }
-    //}
+    }
 
     return exit;
 }
@@ -135,6 +137,11 @@ WINDOW* initial_window_scoreboard_output()
 
 void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_player)
 {
+    if((main_player -> get_current_state()) == Ientity::Air_state::Jumping)
+    {
+
+    }
+
     main_player -> draw(main_player -> get_current_position());
     wmove(operating_window, 0, 0);
     wrefresh(operating_window);

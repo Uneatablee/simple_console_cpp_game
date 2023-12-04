@@ -10,9 +10,11 @@ class Tplayer : virtual public Ientity
 {
 private:
 
+    Air_state m_current_air_state = Air_state::None;
     Tposition m_current_position;
     std::shared_ptr<Ilevel> m_current_level = nullptr;
     std::string m_name;
+    int m_current_acceleration = 0; //acceleration [rows per loop] ----> imitation of gravity
 
 public:
 
@@ -25,4 +27,5 @@ public:
     std::shared_ptr<Ilevel> get_current_level() override;
     Tposition get_current_position() override;
     bool change_current_position(Tposition position) override;
+    Air_state get_current_state() override;
 };

@@ -8,10 +8,13 @@ bool gameloop()
 
     //map setup
     std::string map_name = "level_1_map.txt";
-    std::string map_layout = map_converter(map_name, &gameplay_window_height, &gameplay_window_width); //converting file and getting single string, height and width of gamepolay window
+    std::tuple map_layout = map_converter(map_name); //converting file and getting single string, height and width of gamepolay window
+    std::string map_layout_converted = std::get<0>(map_layout);
+    gameplay_window_height = std::get<1>(map_layout);
+    gameplay_window_width = std::get<2>(map_layout);
 
     //starting level setup
-    std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout, gameplay_window_height, gameplay_window_width);
+    std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout_converted, gameplay_window_height, gameplay_window_width);
     starting_level -> set_starting_position(Tposition(20,20));
 
     //windows setup
@@ -177,12 +180,13 @@ void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_play
     wrefresh(operating_window);
 }
 
-std::string map_converter(std::string p_file_name, unsigned int* map_height, unsigned int* map_width) //Converting map layout from .txt file to single string
+std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string p_file_name) //Converting map layout from .txt file to single string
 {
     std::ifstream file(p_file_name);
     if(!file)
     {
         std::cout << "Error reading map file";
+        throw std::exception();
     }
 
     unsigned int width = 0;
@@ -200,8 +204,7 @@ std::string map_converter(std::string p_file_name, unsigned int* map_height, uns
         map_converted += single_line + "\n";
         height++;
     }
-    *map_width = width+1;
-    *map_height = height;
+    width = width + 1; //for additional endline
     file.close();
-    return map_converted;
+    return {map_converted, height, width};
 }

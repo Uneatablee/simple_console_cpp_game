@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <tuple>
 
 //Library definitions
 #include "Tplayer.hpp"
@@ -23,4 +24,4 @@ WINDOW* initial_window_scoreboard_output();
 bool input_processing(const std::shared_ptr<Ientity>& player);
 bool gameloop();
 void update(WINDOW* win, std::shared_ptr<drawable_player> player);
-std::string map_converter(std::string file_name, unsigned int* map_height, unsigned int* map_width);
+std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string file_name);

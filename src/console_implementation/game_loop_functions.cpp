@@ -172,7 +172,7 @@ void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_play
             main_player -> set_air_state(Ientity::Air_state::Falling);          //constant falling if not on wall
        }
 
-    main_player -> draw(main_player -> get_current_position());
+    main_player -> draw();
     wmove(operating_window, 0, 0);
     wrefresh(operating_window);
 }

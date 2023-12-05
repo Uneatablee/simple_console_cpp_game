@@ -20,5 +20,5 @@ public:
     drawable_player(WINDOW* gameplay_window, std::string init_name);
     ~drawable_player() override = default;
 
-    bool draw(Tposition position) override;
+    bool draw() override;
 };

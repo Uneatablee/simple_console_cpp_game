@@ -12,8 +12,6 @@ int main()
 
     gameloop(); //--> gameloop with gameplaywindow and player (score window addition later)
 
-    //wall collision detecting
-
     //IDEAS:
     //scoreboard fps showcase
 

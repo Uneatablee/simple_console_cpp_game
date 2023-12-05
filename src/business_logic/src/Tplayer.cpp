@@ -5,6 +5,7 @@ Tplayer::Tplayer(std::string init_name)
 {
     m_name = init_name;
     m_current_position = Tposition(0,0);
+    m_current_jump_velocity = m_starting_jump_velocity;
 }
 
 bool Tplayer::assign_level(std::shared_ptr<Ilevel> current_level_pointer)
@@ -23,7 +24,7 @@ bool Tplayer::move(Movement movement)
     if(movement_impossible && movement == Movement::Down && m_current_air_state == Air_state::Falling)
     {
         m_current_air_state = Air_state::None;
-        m_current_jump_velocity = STARTING_JUMP_VELOCITY;
+        m_current_jump_velocity = m_starting_jump_velocity;
         return false;
     }
 

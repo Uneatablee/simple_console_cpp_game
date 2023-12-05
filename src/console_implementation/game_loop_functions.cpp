@@ -1,5 +1,6 @@
 #include "main_header.hpp"
 
+bool exit_value = false;
 
 bool gameloop()
 {
@@ -9,6 +10,7 @@ bool gameloop()
     //map setup
     std::string map_name = "level_1_map.txt";
     std::tuple map_layout = map_converter(map_name); //converting file and getting single string, height and width of gamepolay window
+
     std::string map_layout_converted = std::get<0>(map_layout);
     gameplay_window_height = std::get<1>(map_layout);
     gameplay_window_width = std::get<2>(map_layout);
@@ -30,7 +32,7 @@ bool gameloop()
     //GAME LOOP <------------------->
     std::thread input_process(input_processing, main_player); //--> extracted from game loop ---> its not blocking game updating
 
-    while(true)
+    while(!exit_value)
     {
         update(gameplay_window, main_player); //--> one step forward all movement mechanics
 
@@ -50,11 +52,10 @@ bool gameloop()
 bool input_processing(const std::shared_ptr<Ientity>& player)
 {
     int input;
-    bool exit = false;
     bool only_side_movement_allowed = false;
     unsigned int step_multiplier = 4;    //left and right step length
 
-    while(!exit)
+    while(!exit_value)
     {
         step_multiplier = 4;
         only_side_movement_allowed = false;
@@ -104,14 +105,14 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
                 }
                 break;
             case char(27):
-                exit = true;
+                exit_value = true;
                 break;
             default:
                 break;
         }
     }
 
-    return exit;
+    return true;
 }
 
 WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, unsigned int height, unsigned int width)
@@ -120,7 +121,7 @@ WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, 
     const unsigned int startX = 1;
     const unsigned int startY = 1;
 
-    new_window = newwin(height, width, startY, startX);
+    new_window = newwin(height, width - 1, startY, startX);
     wborder(new_window, '|', '|', '-', '-', '+', '+', '+' , '+');
 
     std::istringstream map_layout(p_current_level -> get_current_map_layout());

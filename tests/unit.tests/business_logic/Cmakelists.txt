@@ -1,6 +1,6 @@
 project(maze_game_unit_tests)
 
-add_executable(maze_game_unit_tests main_test.cpp)
+add_executable(maze_game_unit_tests ./Tplayer/assign_level.cpp ./Tplayer/move.cpp)
 
 target_include_directories(maze_game_unit_tests PRIVATE ../../../lib/FakeIt/single_header/catch)
 

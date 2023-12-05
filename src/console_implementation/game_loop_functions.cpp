@@ -31,13 +31,12 @@ bool gameloop()
     {
         update(gameplay_window, main_player); //--> one step forward all movement mechanics
 
-        //render(); --> rendering with delta time
+        //render(); --> rendering with delta time ---> colours and Ansi codes generator
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     //clearing
     input_process.join();
-
     delwin(gameplay_window);
     delwin(scoreboard_window);
 
@@ -50,7 +49,7 @@ bool input_processing(const std::shared_ptr<Ientity>& player)
     int input;
     bool exit = false;
     bool only_side_movement_allowed = false;
-    unsigned int step_multiplier = 3;
+    unsigned int step_multiplier = 4;    //left and right step length
 
     while(!exit)
     {
@@ -168,8 +167,10 @@ void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_play
     }
 
     if((main_player -> get_current_state()) == Ientity::Air_state::None &&
-       (main_player -> move(Ientity::Movement::Down)) == true)
-    main_player -> set_air_state(Ientity::Air_state::Falling);
+       (main_player -> move(Ientity::Movement::Down)) == true)                  //constant check if falling is available
+       {
+            main_player -> set_air_state(Ientity::Air_state::Falling);          //constant falling if not on wall
+       }
 
     main_player -> draw(main_player -> get_current_position());
     wmove(operating_window, 0, 0);

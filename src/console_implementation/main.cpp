@@ -5,9 +5,15 @@ bool alive_input = false;
 
 int main()
 {
-    WINDOW* standard_screen = initscr();
+    auto standard_screen = std::unique_ptr<WINDOW, void (*)(WINDOW*)>(
+        initscr(),
+        [](WINDOW*)
+        {
+            endwin();
+        });
+
     cbreak();
-    keypad(standard_screen, true);
+    keypad(standard_screen.get(), true);
     noecho();
 
     gameloop(); //--> gameloop with gameplaywindow and player (score window addition later)
@@ -33,6 +39,5 @@ int main()
             ╚═╝      ╚═╝  ╚═╝  ╚═════╝   ╚═════╝
         */
 
-    endwin();
     standard_screen = nullptr;
 }

@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <tuple>
 
 //Library definitions
 #include "Tplayer.hpp"
@@ -17,9 +18,14 @@
 
 //Global game loop functions
 
+
+std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> initial_window_gameplay_output(
+    std::shared_ptr<Ilevel> p_current_level, unsigned int height, unsigned int width);
+
+inline auto WINDOW_deleter = [](WINDOW* win) { delwin(win); };
+std::unique_ptr<WINDOW, decltype(WINDOW_deleter)> initial_window_scoreboard_output();
+
 bool input_processing(const std::shared_ptr<Ientity>& player);
-WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, unsigned int height, unsigned int width);
-WINDOW* initial_window_scoreboard_output();
 bool gameloop();
-void update(WINDOW* win, std::shared_ptr<drawable_player> player);
-std::string map_converter(std::string file_name, unsigned int* map_height, unsigned int* map_width);
+void update(WINDOW* const win, std::shared_ptr<drawable_player> player);
+std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string file_name);

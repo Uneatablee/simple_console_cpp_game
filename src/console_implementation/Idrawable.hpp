@@ -17,6 +17,6 @@ public:
     Idrawable(Idrawable&& object) = default;
     Idrawable& operator=(Idrawable && object) = default;
 
-    virtual bool draw(Tposition position) = 0;
+    virtual bool draw() = 0;
 
 };

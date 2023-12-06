@@ -13,7 +13,7 @@ int main()
         });
 
     cbreak();
-    keypad(standard_screen.get(), true);
+    keypad(standard_screen.get(), TRUE); // https://invisible-island.net/ncurses/ncurses-intro.html
     noecho();
 
     gameloop(); //--> gameloop with gameplaywindow and player (score window addition later)

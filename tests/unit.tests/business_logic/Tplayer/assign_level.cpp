@@ -47,6 +47,5 @@ TEST_CASE("WhenAssignLevel_IsCalled_CurrentPositionBecomesStartingPositionFromLe
 
     //Assert
 
-    REQUIRE(result.m_position_x == expected_result.m_position_x);
-    REQUIRE(result.m_position_y == expected_result.m_position_y);
+    REQUIRE(result == expected_result);
 }

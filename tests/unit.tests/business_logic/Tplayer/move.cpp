@@ -30,8 +30,7 @@ TEST_CASE("Player_can_move")
 
         //Assert
 
-        REQUIRE(result.m_position_x == expected_result.m_position_x);
-        REQUIRE(result.m_position_y == expected_result.m_position_y);
+        REQUIRE(result == expected_result);
 
     }
 
@@ -43,8 +42,7 @@ TEST_CASE("Player_can_move")
 
         //Assert
 
-        REQUIRE(result.m_position_x == expected_result.m_position_x);
-        REQUIRE(result.m_position_y == expected_result.m_position_y);
+        REQUIRE(result == expected_result);
     }
 
     SECTION("WhenMoveLEFT_IsCalled_XpositionIsLower")
@@ -55,8 +53,7 @@ TEST_CASE("Player_can_move")
 
         //Assert
 
-        REQUIRE(result.m_position_x == expected_result.m_position_x);
-        REQUIRE(result.m_position_y == expected_result.m_position_y);
+        REQUIRE(result == expected_result);
     }
 
     SECTION("WhenMoveRIGHT_IsCalled_XpositionIsHigher")
@@ -67,7 +64,6 @@ TEST_CASE("Player_can_move")
 
         //Assert
 
-        REQUIRE(result.m_position_x == expected_result.m_position_x);
-        REQUIRE(result.m_position_y == expected_result.m_position_y);
+        REQUIRE(result == expected_result);
     }
 }

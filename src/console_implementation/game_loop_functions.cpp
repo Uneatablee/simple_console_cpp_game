@@ -1,6 +1,6 @@
 #include "main_header.hpp"
 
-bool exit_value = false;
+bool exit_value = false;  //condition of game_loops (game_loop with render, update and input_loop) working
 
 bool gameloop()
 {
@@ -20,7 +20,10 @@ bool gameloop()
     starting_level -> set_starting_position(Tposition(20,20));
 
     //windows setup
+
     WINDOW* gameplay_window;
+    //std::shared_ptr<WINDOW> gameplay_window_test(gameplay_window);
+
     WINDOW* scoreboard_window;
     scoreboard_window = initial_window_scoreboard_output();
     gameplay_window = initial_window_gameplay_output(starting_level,gameplay_window_height, gameplay_window_width);
@@ -175,6 +178,8 @@ void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_play
        {
             main_player -> set_air_state(Ientity::Air_state::Falling);          //constant falling if not on wall
        }
+
+    //map random generating and sliding down -->
 
     main_player -> draw();
     wmove(operating_window, 0, 0);

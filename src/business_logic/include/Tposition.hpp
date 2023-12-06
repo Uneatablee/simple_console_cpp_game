@@ -16,4 +16,15 @@ public:
     Tposition(Tposition&& object) = default;
     Tposition& operator=(Tposition&& object) = default;
     Tposition(int x, int y) : m_position_x(x), m_position_y(y){}
+
+    bool operator==(Tposition p_position) const
+    {
+        if(this -> m_position_x == p_position.m_position_x &&
+           this -> m_position_y == p_position.m_position_y)
+           {
+                return true;
+           }
+
+           return false;
+    }
 };

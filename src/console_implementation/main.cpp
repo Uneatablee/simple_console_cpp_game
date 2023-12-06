@@ -5,7 +5,7 @@ bool alive_input = false;
 
 int main()
 {
-    auto standard_screen = std::unique_ptr<WINDOW, void (*)(WINDOW*)>(
+    const auto standard_screen = std::unique_ptr<WINDOW, void (*)(WINDOW*)>(
         initscr(),
         [](WINDOW*)
         {
@@ -38,6 +38,4 @@ int main()
             ██║      ██║  ██║ ╚██████╔╝ ╚██████╔╝
             ╚═╝      ╚═╝  ╚═╝  ╚═════╝   ╚═════╝
         */
-
-    standard_screen = nullptr;
 }

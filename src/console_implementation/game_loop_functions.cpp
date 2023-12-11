@@ -10,7 +10,6 @@ bool gameloop()
     //map setup
     std::string map_name = "level_1_map.txt";
     std::tuple map_layout = map_converter(map_name); //converting file and getting single string, height and width of gamepolay window
-
     std::string map_layout_converted = std::get<0>(map_layout);
     gameplay_window_height = std::get<1>(map_layout);
     gameplay_window_width = std::get<2>(map_layout);
@@ -20,7 +19,6 @@ bool gameloop()
     starting_level -> set_starting_position(Tposition(20,20));
 
     //windows setup
-
     auto scoreboard_window = initial_window_scoreboard_output();
     auto gameplay_window = initial_window_gameplay_output(starting_level, gameplay_window_height, gameplay_window_width);
 
@@ -41,7 +39,6 @@ bool gameloop()
 
     //clearing
     input_process.join();
-
     return false;
 }
 
@@ -212,4 +209,52 @@ std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string p_
     width = width + 1; //for additional endline
     file.close();
     return {map_converted, height, width};
+}
+
+std::unique_ptr<Iobstacle> random_platform_generator(std::shared_ptr<Tscene> p_platform_container)
+{
+    std::srand(std::time(0));
+    unsigned int upcoming_platform_position_x;
+    unsigned int upcoming_platform_position_y;
+
+    unsigned int max_left_width;
+    unsigned int max_right_width;
+    unsigned int max_up_height;
+    unsigned int max_down_height;
+
+    unsigned int new_platform_width;
+    unsigned int new_platform_height;
+    unsigned short max_platform_width;
+    unsigned short max_platform_height = 3;
+
+    max_left_width = p_platform_container -> get_last_platform_position().m_position_x - 5;
+    if (max_left_width <= 0)
+    {
+        max_left_width = 2;
+    }
+
+    max_right_width = p_platform_container -> get_last_platform_position().m_position_x + 5;
+    if (max_right_width >= p_platform_container -> get_current_map_width())
+    {
+        max_right_width = p_platform_container -> get_current_map_width() - 2;
+    }
+
+    max_up_height = p_platform_container -> get_last_platform_position().m_position_y + 5;
+    max_down_height = p_platform_container -> get_last_platform_position().m_position_y + 2;
+
+    upcoming_platform_position_x = (rand() % (max_right_width - max_left_width + 1)) + max_left_width;
+    upcoming_platform_position_y = (rand() % (max_up_height - max_down_height + 1)) + max_down_height;
+    Tposition new_platform_coordinates(upcoming_platform_position_x, upcoming_platform_position_y);
+
+    max_platform_width = p_platform_container -> get_current_map_width() - upcoming_platform_position_x - 2;
+    if(max_platform_width < 2)
+    {
+        max_platform_width = 2;
+    }
+    new_platform_width = (rand() % (max_platform_width - 2 + 1)) + 2;
+    new_platform_height = (rand() % (max_platform_height)) + 1;
+
+    std::unique_ptr<Iobstacle> new_platform = std::make_unique<Tplatform>(new_platform_coordinates, new_platform_height, new_platform_width);
+
+    return new_platform;
 }

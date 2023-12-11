@@ -9,12 +9,15 @@
 #include <fstream>
 #include <sstream>
 #include <tuple>
+#include <stdlib.h>
 
 //Library definitions
 #include "Tplayer.hpp"
 #include "Idrawable.hpp"
 #include "drawable_player.hpp"
 #include "Tlevel.hpp"
+#include "Tplatform.hpp"
+#include "Tscene.hpp"
 
 //Global game loop functions
 
@@ -29,3 +32,5 @@ bool input_processing(const std::shared_ptr<Ientity>& player);
 bool gameloop();
 void update(WINDOW* const win, std::shared_ptr<drawable_player> player);
 std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string file_name);
+
+std::unique_ptr<Iobstacle> random_platform_generator(std::shared_ptr<Tscene> platform_container);

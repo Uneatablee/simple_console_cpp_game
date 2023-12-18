@@ -18,4 +18,5 @@ public:
     virtual unsigned int get_height() = 0;
     virtual unsigned int get_width() = 0;
     virtual Tposition get_position() = 0;
+    virtual bool change_position(Tposition position) = 0;
 };

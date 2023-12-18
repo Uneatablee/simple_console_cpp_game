@@ -28,4 +28,18 @@ public:
            return false;
     }
 
+    bool operator<(Tposition p_position) const
+    {
+        if(m_position_x < p_position.m_position_x)
+        {
+            return true;
+        }
+        else if(m_position_x > p_position.m_position_x)
+        {
+            return false;
+        }
+
+        return m_position_x < p_position.m_position_x;
+    }
+
 };

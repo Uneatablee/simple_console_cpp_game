@@ -19,4 +19,5 @@ public:
     unsigned int get_height() override;
     unsigned int get_width() override;
     Tposition get_position() override;
+    bool change_position(Tposition position) override;
 };

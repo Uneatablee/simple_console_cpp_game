@@ -20,3 +20,11 @@ Tposition Tplatform::get_position()
 {
     return m_position_coordinates;
 }
+
+bool Tplatform::change_position(Tposition p_position)
+{
+    m_position_coordinates.m_position_x = p_position.m_position_x;
+    m_position_coordinates.m_position_y = p_position.m_position_y;
+
+    return true;
+}

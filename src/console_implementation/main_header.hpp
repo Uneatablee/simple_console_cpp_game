@@ -30,7 +30,7 @@ std::unique_ptr<WINDOW, decltype(WINDOW_deleter)> initial_window_scoreboard_outp
 
 bool input_processing(const std::shared_ptr<Ientity>& player);
 bool gameloop();
-void update(WINDOW* const win, std::shared_ptr<drawable_player> player);
+void update(WINDOW* const win, std::shared_ptr<drawable_player> player, std::shared_ptr<Tscene> current_level);
 std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string file_name);
 
-std::unique_ptr<Iobstacle> random_platform_generator(std::shared_ptr<Tscene> platform_container);
+Tplatform random_platform_generator(std::shared_ptr<Tscene> platform_container);

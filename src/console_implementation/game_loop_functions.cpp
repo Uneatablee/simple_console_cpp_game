@@ -10,17 +10,6 @@ bool gameloop()
     unsigned int gameplay_window_height;
     unsigned int gameplay_window_width;
 
-    //map setup
-    // std::string map_name = "level_1_map.txt";
-    // std::tuple map_layout = map_converter(map_name); //converting file and getting single string, height and width of gamepolay window
-    // std::string map_layout_converted = std::get<0>(map_layout);
-    // gameplay_window_height = std::get<1>(map_layout);
-    // gameplay_window_width = std::get<2>(map_layout);
-    // starting level setup -> uploaded map
-    // std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout_converted, gameplay_window_height, gameplay_window_width);
-    // starting_level -> set_starting_position(Tposition(20,20));
-
-    //starting level setup -> generating map
     std::shared_ptr<Tscene> self_generating_level = std::make_shared<Tscene>(40, 140); //test width and height values
     self_generating_level -> set_starting_position(Tposition(20,20));
 
@@ -315,7 +304,7 @@ bool starting_screen()
 
     wborder(new_window.get(), '|', '|', '-', '-', '+', '+', '+', '+');
 
-    std::vector<std::string> logo_container;
+    std::vector<std::string> logo_container{};
     logo_container.push_back("       __   __    __  .___  ___. .______");
     logo_container.push_back("      |  | |  |  |  | |   \\/   | |   _  \\");
     logo_container.push_back("      |  | |  |  |  | |  \\  /  | |  |_)  | ");
@@ -352,7 +341,7 @@ bool starting_screen()
         wrefresh(new_window.get());
     }
 
-    std::vector<std::string> countdown_container;
+    std::vector<std::string> countdown_container{};
     countdown_container.push_back(" ____");
     countdown_container.push_back("|___  \\");
     countdown_container.push_back(" ___) | ");

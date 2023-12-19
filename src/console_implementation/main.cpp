@@ -16,26 +16,7 @@ int main()
     keypad(standard_screen.get(), TRUE); // https://invisible-island.net/ncurses/ncurses-intro.html
     noecho();
 
-    gameloop(); //--> gameloop with gameplaywindow and player (score window addition later)
+    gameloop(); //--> gameloop with gameplaywindow and player
 
-    //IDEAS:
-    //scoreboard fps showcase
-
-
-        //Starting screen title_part idea:
-        /*
-
-         ██╗ ██╗   ██╗ ███╗   ███╗ ██████╗
-         ██║ ██║   ██║ ████╗ ████║ ██╔══██╗
-         ██║ ██║   ██║ ██╔████╔██║ ██████╔╝
-    ██   ██║ ██║   ██║ ██║╚██╔╝██║ ██╔═══╝
-    ╚█████╔╝ ╚██████╔╝ ██║ ╚═╝ ██║ ██║
-     ╚════╝   ╚═════╝  ╚═╝     ╚═╝ ╚═╝
-            ███████╗ ██████╗   ██████╗   ██████╗
-            ██╔════╝ ██╔══██╗ ██╔═══██╗ ██╔════╝
-            █████╗   ██████╔╝ ██║   ██║ ██║  ███╗
-            ██╔══╝   ██╔══██╗ ██║   ██║ ██║   ██║
-            ██║      ██║  ██║ ╚██████╔╝ ╚██████╔╝
-            ╚═╝      ╚═╝  ╚═╝  ╚═════╝   ╚═════╝
-        */
+    //INCLUDE TO STARTING SCREEN -> red curtains so that game uses ansii colours also.
 }

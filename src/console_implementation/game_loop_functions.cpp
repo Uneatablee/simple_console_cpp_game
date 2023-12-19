@@ -1,9 +1,12 @@
 #include "main_header.hpp"
 
 bool exit_value = false;  //condition of game_loops (game_loop with render, update and input_loop) working
+unsigned short speed_limiter = 10; //speed of map travelling down
+unsigned short map_speed_interval = 500; //after 500 game_loop iterations -> speeding up
 
 bool gameloop()
 {
+    starting_screen();
     unsigned int gameplay_window_height;
     unsigned int gameplay_window_width;
 
@@ -13,8 +16,7 @@ bool gameloop()
     // std::string map_layout_converted = std::get<0>(map_layout);
     // gameplay_window_height = std::get<1>(map_layout);
     // gameplay_window_width = std::get<2>(map_layout);
-
-    //starting level setup -> uploaded map
+    // starting level setup -> uploaded map
     // std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout_converted, gameplay_window_height, gameplay_window_width);
     // starting_level -> set_starting_position(Tposition(20,20));
 
@@ -28,6 +30,7 @@ bool gameloop()
 
     //player setup
     auto main_player = std::make_shared<drawable_player>(gameplay_window.get(), "main_player");
+
     //main_player -> assign_level(starting_level);
     main_player -> assign_level(self_generating_level);
 
@@ -36,11 +39,13 @@ bool gameloop()
 
     while(!exit_value)
     {
-        update(gameplay_window.get(), main_player, self_generating_level); //--> one step forward all movement mechanics
+        exit_value = update(gameplay_window.get(), main_player, self_generating_level); //--> one step forward all movement mechanics
 
         //render(); --> rendering with delta time ---> colours and Ansi codes generator
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
+
+    std::cout <<"\nGame Over!\n";
 
     //clearing
     input_process.join();
@@ -153,14 +158,16 @@ std::unique_ptr<WINDOW, decltype(WINDOW_deleter)> initial_window_scoreboard_outp
         WINDOW_deleter);
 
     wborder(new_window.get(), '|', '|', '-', '-', '+', '+', '+', '+');
+    mvwprintw(new_window.get(), 5, 8, "SCORE:");
     wrefresh(new_window.get());
 
     return new_window;
 }
 
-void
-update(WINDOW* const operating_window, std::shared_ptr<drawable_player> main_player, std::shared_ptr<Tscene> p_current_level)
+bool update(WINDOW* const operating_window, std::shared_ptr<drawable_player> main_player, std::shared_ptr<Tscene> p_current_level)
 {
+    bool play_over = false;
+    static int counter = 0;
     Ientity::Air_state current_air_state = main_player -> get_current_state();
 
     switch(current_air_state)
@@ -182,19 +189,37 @@ update(WINDOW* const operating_window, std::shared_ptr<drawable_player> main_pla
        }
 
     //map random generating and sliding down
-    if(p_current_level -> get_current_platforms_count() < 6)
+    unsigned short current_platforms_count = p_current_level -> get_current_platforms_count();
+    if(current_platforms_count)
     {
         p_current_level -> add_platform(random_platform_generator(p_current_level));
     }
 
     //output
     p_current_level -> draw(operating_window);
-    p_current_level -> level_movement_down();
+
+    if(counter % speed_limiter == 0)  //once in a n loops platforms moving down. Add constant miliseconds interval later (delta time).
+    {
+        p_current_level -> level_movement_down(operating_window);
+    }
+    counter++;
+    if(counter > map_speed_interval && speed_limiter >= 0)
+    {
+        speed_limiter -= 2;
+        map_speed_interval *= 2;
+    }
+
     main_player -> draw();
 
+    if(main_player -> get_current_position().m_position_y > p_current_level -> get_current_map_height() + 2)
+    {
+        play_over = true;
+    }
 
+    border_refresh(operating_window, p_current_level);
     wmove(operating_window, 0, 0);
     wrefresh(operating_window);
+    return play_over;
 }
 
 std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string p_file_name) //Converting map layout from .txt file to single string
@@ -259,6 +284,7 @@ Tplatform random_platform_generator(std::shared_ptr<Tscene> current_scene)
     if(next_x_position + next_platform_width > current_scene -> get_current_map_width() - 4)
     {
         next_platform_width = (current_scene -> get_current_map_width() - next_x_position - 1);
+        next_x_position = next_x_position - 20;
     }
 
     Tposition new_platform_position(next_x_position, next_y_position);
@@ -266,4 +292,101 @@ Tplatform random_platform_generator(std::shared_ptr<Tscene> current_scene)
     Tplatform new_platform(new_platform_position, 1, next_platform_width);
 
     return new_platform;
+}
+
+bool border_refresh(WINDOW* gameplay_window, std::shared_ptr<Tscene> p_current_level)
+{
+    std::string frame(p_current_level -> get_current_map_width(), '#');
+    mvwprintw(gameplay_window, p_current_level -> get_current_map_height() - 1, 0, frame.c_str());
+    mvwprintw(gameplay_window, 0, 0, frame.c_str());
+    return true;
+}
+
+bool starting_screen()
+{
+    const unsigned int startX = 1;
+    const unsigned int startY = 1;
+    auto new_window = std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>(
+        newwin(40, 140 - 1, startY, startX),
+        [](WINDOW* win)
+        {
+            delwin(win);
+        });
+
+    wborder(new_window.get(), '|', '|', '-', '-', '+', '+', '+', '+');
+
+    std::vector<std::string> logo_container;
+    logo_container.push_back("       __   __    __  .___  ___. .______");
+    logo_container.push_back("      |  | |  |  |  | |   \\/   | |   _  \\");
+    logo_container.push_back("      |  | |  |  |  | |  \\  /  | |  |_)  | ");
+    logo_container.push_back(".--.  |  | |  |  |  | |   \\/|  | |   ___/  ");
+    logo_container.push_back("|  `--'  | |  `--'  | |  |  |  | |  |  ");
+    logo_container.push_back(" \\______/   \\______/  |__|  |__| | _| ");
+
+    logo_container.push_back("  _______ .______        ______     _______ ");
+    logo_container.push_back(" |   ____||   _  \\      /  __  \\   /  _____|");
+    logo_container.push_back(" |  |__   |  |_)  |    |  |  |  | |  |  __");
+    logo_container.push_back(" |   __|  |      /     |  |  |  | |  | |_ |");
+    logo_container.push_back(" |  |     |  |\\  \\----.|  `--'  | |  |__| |");
+    logo_container.push_back(" |__|     | _| `._____| \\______/   \\______|");
+
+    int i = 0;
+    for(auto elem : logo_container)
+    {
+        mvwprintw(new_window.get(), 14 + i, 58, elem.c_str());
+        i++;
+        wrefresh(new_window.get());
+    }
+
+    for(int j = 0; j < 50; j++)
+    {
+        i = 0;
+        for(auto elem : logo_container)
+        {
+            std::string temp(elem.length(),' ');
+            mvwprintw(new_window.get(), 14 + i, 58 - j + 1, temp.c_str());
+            mvwprintw(new_window.get(), 14 + i, 58 - j, elem.c_str());
+            i++;
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        }
+        wrefresh(new_window.get());
+    }
+
+    std::vector<std::string> countdown_container;
+    countdown_container.push_back(" ____");
+    countdown_container.push_back("|___  \\");
+    countdown_container.push_back(" ___) | ");
+    countdown_container.push_back("|__  < ");
+    countdown_container.push_back(" ___) |  ");
+    countdown_container.push_back("|____/  ");
+
+    countdown_container.push_back(" ___  ");
+    countdown_container.push_back("|__ \\ ");
+    countdown_container.push_back("   ) |");
+    countdown_container.push_back("  / / ");
+    countdown_container.push_back(" / /_ ");
+    countdown_container.push_back("|____|");
+
+    countdown_container.push_back(" __");
+    countdown_container.push_back("/_ |");
+    countdown_container.push_back(" | |");
+    countdown_container.push_back(" | |");
+    countdown_container.push_back(" | |");
+    countdown_container.push_back(" |_|");
+
+    std::string cleaner("          ");
+
+    int line = 0;
+    for(int i = 0; i<3; i++)
+    {
+        for(int j = 0; j < 6 ; j++)
+        {
+            mvwprintw(new_window.get(), 17 + j, 100, cleaner.c_str());
+            mvwprintw(new_window.get(), 17 + j, 100, countdown_container[line].c_str());
+            line++;
+        }
+        wrefresh(new_window.get());
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
+    }
+    return true;
 }

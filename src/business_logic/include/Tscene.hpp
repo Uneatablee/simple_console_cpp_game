@@ -35,7 +35,7 @@ public:
     bool add_floor() override;
     bool add_platform(Tplatform platform) override;
     bool draw(WINDOW* gameplay) override;
-    bool level_movement_down();
+    bool level_movement_down(WINDOW* gameplay_window);
     unsigned int get_current_map_height() override;
     unsigned int get_current_map_width() override;
     std::string get_current_map_layout() override;

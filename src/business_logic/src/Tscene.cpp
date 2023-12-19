@@ -181,6 +181,12 @@ bool Tscene::draw(WINDOW* gameplay_window)
 {
     for(auto elem : m_platforms_container)
     {
+        std::string platform_output(elem.second.get_width(),' ');
+        mvwprintw(gameplay_window, elem.second.get_position().m_position_y - 1, elem.second.get_position().m_position_x, platform_output.c_str());
+    }
+
+    for(auto elem : m_platforms_container)
+    {
         std::string platform_output(elem.second.get_width(),'@');
         mvwprintw(gameplay_window, elem.second.get_position().m_position_y, elem.second.get_position().m_position_x, platform_output.c_str());
     }
@@ -199,21 +205,31 @@ bool Tscene::add_platform(Tplatform platform)
     return true;
 }
 
-bool Tscene::level_movement_down()
+bool Tscene::level_movement_down(WINDOW* gameplay_window)
 {
-    unsigned short removing_objects_count = std::min(static_cast<short>(1), static_cast<short>(m_platforms_container.size()));
-    std::map<unsigned int, Tplatform>::iterator removing_iterator = m_platforms_container.begin();
-    std::advance(removing_iterator, removing_objects_count);
+    //unsigned short removing_objects_count = std::min(static_cast<short>(1), static_cast<short>(m_platforms_container.size()));
+    //std::map<unsigned int, Tplatform>::iterator removing_iterator = m_platforms_container.begin();
+    //std::advance(removing_iterator, removing_objects_count);
+    unsigned int platform_key_to_remove = 9999;
 
-    for(auto elem : m_platforms_container)
+    for(auto &elem : m_platforms_container)
     {
         elem.second.change_position(Tposition(elem.second.get_position().m_position_x, elem.second.get_position().m_position_y + 1));
 
         if(elem.second.get_position().m_position_y >= this -> get_current_map_height())
         {
-           m_platforms_container.erase(m_platforms_container.begin(), removing_iterator);
+            std::string platform_output(elem.second.get_width(),' ');
+            mvwprintw(gameplay_window, elem.second.get_position().m_position_y - 1, elem.second.get_position().m_position_x, platform_output.c_str());
+            platform_key_to_remove = elem.first;
         }
     }
+
+    auto map_remove_iterator = m_platforms_container.find(platform_key_to_remove);
+    if(map_remove_iterator != m_platforms_container.end())
+    {
+        m_platforms_container.erase(map_remove_iterator);
+    }
+
     return true;
 }
 

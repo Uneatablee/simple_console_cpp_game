@@ -10,6 +10,7 @@
 #include <sstream>
 #include <tuple>
 #include <stdlib.h>
+#include <vector>
 
 //Library definitions
 #include "Tplayer.hpp"

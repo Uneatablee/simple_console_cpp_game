@@ -28,7 +28,7 @@ bool gameloop()
 
     while(!exit_value)
     {
-        exit_value = update(gameplay_window.get(), main_player, self_generating_level); //--> one step forward all movement mechanics
+        exit_value = update(gameplay_window.get(),scoreboard_window.get(), main_player, self_generating_level); //--> one step forward all movement mechanics
 
         //render(); --> rendering with delta time ---> colours and Ansi codes generator
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -153,10 +153,13 @@ std::unique_ptr<WINDOW, decltype(WINDOW_deleter)> initial_window_scoreboard_outp
     return new_window;
 }
 
-bool update(WINDOW* const operating_window, std::shared_ptr<drawable_player> main_player, std::shared_ptr<Tscene> p_current_level)
+bool update(WINDOW* const operating_window,WINDOW* const scoreboard, std::shared_ptr<drawable_player> main_player, std::shared_ptr<Tscene> p_current_level)
 {
     bool play_over = false;
-    static int counter = 0;
+    static unsigned int counter = 0;
+    static int height_register = 0;
+    static unsigned int best_score = 0;
+
     Ientity::Air_state current_air_state = main_player -> get_current_state();
 
     switch(current_air_state)
@@ -190,6 +193,7 @@ bool update(WINDOW* const operating_window, std::shared_ptr<drawable_player> mai
     if(counter % speed_limiter == 0)  //once in a n loops platforms moving down. Add constant miliseconds interval later (delta time).
     {
         p_current_level -> level_movement_down(operating_window);
+        height_register++;
     }
     counter++;
     if(counter > map_speed_interval && speed_limiter >= 0)
@@ -200,9 +204,17 @@ bool update(WINDOW* const operating_window, std::shared_ptr<drawable_player> mai
 
     main_player -> draw();
 
-    if(main_player -> get_current_position().m_position_y > p_current_level -> get_current_map_height() + 2)
+    if(main_player -> get_current_position().m_position_y > p_current_level -> get_current_map_height() + 1)
     {
         play_over = true;
+    }
+    unsigned int current_player_height =  (p_current_level -> get_current_map_height()) - (main_player -> get_current_position().m_position_y);
+
+    if(current_player_height + height_register > best_score)
+    {
+        best_score = current_player_height + height_register;
+        mvwprintw(scoreboard, 6, 8, (std::to_string(best_score)).c_str());
+        wrefresh(scoreboard);
     }
 
     border_refresh(operating_window, p_current_level);

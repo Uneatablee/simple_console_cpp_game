@@ -10,6 +10,9 @@ add_compile_options(-Wall -Wextra)
 add_subdirectory(src/business_logic)
 add_subdirectory(src/console_implementation)
 
-enable_testing()
+include (CTest)
+
+find_program( MEMORYCHECK_COMMAND valgrind )
+set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
 
 add_subdirectory(tests)

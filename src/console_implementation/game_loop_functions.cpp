@@ -11,7 +11,7 @@ bool gameloop()
     unsigned int gameplay_window_width;
 
     std::shared_ptr<Tscene> self_generating_level = std::make_shared<Tscene>(40, 140); //test width and height values
-    self_generating_level -> set_starting_position(Tposition(20,20));
+    self_generating_level -> set_starting_position(Tposition(70,20));
 
     //windows setup
     auto scoreboard_window = initial_window_scoreboard_output();
@@ -44,7 +44,7 @@ bool gameloop()
 bool input_processing(const std::shared_ptr<Ientity>& player)
 {
     int input;
-    bool only_side_movement_allowed = false;
+    bool only_side_movement_allowed = false; //blocking input while player is midair to prevent double jumping
     unsigned int step_multiplier = 4;    //left and right step length
 
     while(!exit_value)
@@ -170,6 +170,9 @@ bool update(WINDOW* const operating_window,WINDOW* const scoreboard, std::shared
         case Ientity::Air_state::Falling:
             main_player -> fall();
             break;
+        case Ientity::Air_state::Gravity:
+            main_player -> move(Ientity::Movement::Down);
+            break;
         case Ientity::Air_state::None:
             break;
     }
@@ -177,12 +180,24 @@ bool update(WINDOW* const operating_window,WINDOW* const scoreboard, std::shared
     if((main_player -> get_current_state()) == Ientity::Air_state::None &&
        (main_player -> move(Ientity::Movement::Down)) == true)                  //constant check if falling is available
        {
-            main_player -> set_air_state(Ientity::Air_state::Falling);          //constant falling if not on wall
+            if(main_player -> move(Ientity::Movement::Down) == true)
+            {
+                main_player -> set_air_state(Ientity::Air_state::Falling);
+            }
+            else
+            {
+                main_player -> set_air_state(Ientity::Air_state::Gravity);       //constant falling if not on wall
+            }
        }
+
+    if((main_player -> get_current_jump_velocity() >1) && (main_player -> get_current_state() == Ientity::Air_state::Gravity))
+    {
+        main_player -> set_air_state(Ientity::Air_state::Falling);
+    }
 
     //map random generating and sliding down
     unsigned short current_platforms_count = p_current_level -> get_current_platforms_count();
-    if(current_platforms_count)
+    if(current_platforms_count < 10)
     {
         p_current_level -> add_platform(random_platform_generator(p_current_level));
     }
@@ -262,8 +277,23 @@ Tplatform random_platform_generator(std::shared_ptr<Tscene> current_scene)
     unsigned int horizontal_spacing = 5;   //max horizontal spacing between next platforms
     unsigned int vertical_spacing = 5;     //max vertical spacing between platfroms
 
-    unsigned int left_x_range = current_scene -> get_last_platform_position().m_position_x - horizontal_spacing;
-    unsigned int right_x_range = current_scene -> get_last_platform_position().m_position_x + current_scene -> get_last_platform_width() + horizontal_spacing;
+    unsigned int side_drawing = rand() % 2; //drawing on which side next platform will be
+    unsigned int left_x_range, right_x_range;
+
+    unsigned short min_platform_width = 5;
+    unsigned short max_platform_width = 16;
+    unsigned short next_platform_width = (rand() % (max_platform_width - min_platform_width)) + min_platform_width + 1;
+
+    if(side_drawing)  //left side choosen
+    {
+        left_x_range = current_scene -> get_last_platform_position().m_position_x - next_platform_width;
+        right_x_range = current_scene -> get_last_platform_position().m_position_x + - next_platform_width + horizontal_spacing;
+    }
+    else  //right side choosen
+    {
+        left_x_range = current_scene -> get_last_platform_position().m_position_x + next_platform_width - horizontal_spacing;
+        right_x_range = current_scene -> get_last_platform_position().m_position_x + next_platform_width;
+    }
 
     if(left_x_range < 2)
     {
@@ -277,10 +307,6 @@ Tplatform random_platform_generator(std::shared_ptr<Tscene> current_scene)
 
     int next_y_position = current_scene -> get_last_platform_position().m_position_y - vertical_spacing;
     unsigned int next_x_position = (rand() % (right_x_range - left_x_range)) + left_x_range + 1;
-
-    unsigned short min_platform_width = 3;
-    unsigned short max_platform_width = 16;
-    unsigned short next_platform_width = (rand() % (max_platform_width - min_platform_width)) + min_platform_width + 1;
 
     if(next_x_position + next_platform_width > current_scene -> get_current_map_width() - 4)
     {

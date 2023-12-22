@@ -112,3 +112,8 @@ bool Tplayer::set_air_state(Air_state state)
     m_current_air_state = state;
     return true;
 }
+
+int Tplayer::get_current_jump_velocity()
+{
+    return m_current_jump_velocity;
+}

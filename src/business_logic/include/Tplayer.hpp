@@ -34,4 +34,5 @@ public:
     Tposition get_current_position() override;
     std::shared_ptr<Ilevel> get_current_level() override;
     Air_state get_current_state() override;
+    int get_current_jump_velocity() override;
 };

@@ -196,21 +196,19 @@ bool update(WINDOW* const operating_window,WINDOW* const scoreboard, std::shared
     }
 
     //map random generating and sliding down
-    unsigned short current_platforms_count = p_current_level -> get_current_platforms_count();
-    if(current_platforms_count < 10)
-    {
-        p_current_level -> add_platform(random_platform_generator(p_current_level));
-    }
-
     //output
     p_current_level -> draw(operating_window);
 
+    bool movement_down = false;
     if(counter % speed_limiter == 0)  //once in a n loops platforms moving down. Add constant miliseconds interval later (delta time).
     {
-        p_current_level -> level_movement_down(operating_window);
+        movement_down = true;
         height_register++;
     }
+
+    p_current_level -> level_movement_down(operating_window, movement_down);
     counter++;
+
     if(counter > map_speed_interval && speed_limiter >= 0)
     {
         speed_limiter -= 2;
@@ -265,60 +263,6 @@ std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string p_
     width = width + 1; //for additional endline
     file.close();
     return {map_converted, height, width};
-}
-
-Tplatform random_platform_generator(std::shared_ptr<Tscene> current_scene)
-{
-    std::chrono::time_point<std::chrono::system_clock> current_time = std::chrono::system_clock::now();
-    auto duration_since_epoch = current_time.time_since_epoch();
-    srand(std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch).count());
-
-    //next platform generation base coorrdinates:
-    unsigned int horizontal_spacing = 5;   //max horizontal spacing between next platforms
-    unsigned int vertical_spacing = 5;     //max vertical spacing between platfroms
-
-    unsigned int side_drawing = rand() % 2; //drawing on which side next platform will be
-    unsigned int left_x_range, right_x_range;
-
-    unsigned short min_platform_width = 5;
-    unsigned short max_platform_width = 16;
-    unsigned short next_platform_width = (rand() % (max_platform_width - min_platform_width)) + min_platform_width + 1;
-
-    if(side_drawing)  //left side choosen
-    {
-        left_x_range = current_scene -> get_last_platform_position().m_position_x - next_platform_width;
-        right_x_range = current_scene -> get_last_platform_position().m_position_x + - next_platform_width + horizontal_spacing;
-    }
-    else  //right side choosen
-    {
-        left_x_range = current_scene -> get_last_platform_position().m_position_x + next_platform_width - horizontal_spacing;
-        right_x_range = current_scene -> get_last_platform_position().m_position_x + next_platform_width;
-    }
-
-    if(left_x_range < 2)
-    {
-        left_x_range = 2;
-    }
-
-    if(right_x_range > current_scene -> get_current_map_width() - 4)
-    {
-        right_x_range = current_scene -> get_current_map_width() - 4;
-    }
-
-    int next_y_position = current_scene -> get_last_platform_position().m_position_y - vertical_spacing;
-    unsigned int next_x_position = (rand() % (right_x_range - left_x_range)) + left_x_range + 1;
-
-    if(next_x_position + next_platform_width > current_scene -> get_current_map_width() - 4)
-    {
-        next_platform_width = (current_scene -> get_current_map_width() - next_x_position - 1);
-        next_x_position = next_x_position - 20;
-    }
-
-    Tposition new_platform_position(next_x_position, next_y_position);
-    current_scene -> set_last_platform_position(new_platform_position);
-    Tplatform new_platform(new_platform_position, 1, next_platform_width);
-
-    return new_platform;
 }
 
 bool border_refresh(WINDOW* gameplay_window, std::shared_ptr<Tscene> p_current_level)
@@ -417,3 +361,42 @@ bool starting_screen()
     }
     return true;
 }
+
+bool ending_screen()
+{
+    std::string background_colours;
+    struct colour
+    {
+    public:
+        unsigned int red;
+        unsigned int green;
+        unsigned int blue;
+
+        colour(unsigned int r, unsigned int g, unsigned int b) : red(r), green(g), blue(b)
+        {
+
+        }
+
+        std::string get_content()
+        {
+            return std::string("\x1b[48;2;" + std::to_string(red) +";"+ std::to_string(green) +";"+ std::to_string(blue) +"m"+"  "+"\1xb[0m");
+        }
+    };
+
+
+    for(int i = 0; i < 40; i++)
+    {
+        for(int j = 0; j < 70; j++)
+        {
+            background_colours += colour(255, 0, j*6).get_content();
+        }
+        background_colours += + "\n";
+    }
+
+    std::cout << std::flush;
+    system("clear");
+    std::cout << background_colours;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+}
+

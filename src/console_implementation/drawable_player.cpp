@@ -7,6 +7,7 @@ drawable_player::drawable_player(WINDOW* const gameplay_window, std::string init
 
 bool drawable_player::draw()
 {
+
     static Tposition previous_position = Tposition(0,0);
     if(previous_position.m_position_x != 0 && previous_position.m_position_y != 0)
     {

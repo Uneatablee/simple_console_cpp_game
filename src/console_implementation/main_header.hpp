@@ -33,7 +33,9 @@ bool input_processing(const std::shared_ptr<Ientity>& player);
 bool gameloop();
 bool update(WINDOW* const win, WINDOW* const win_score, std::shared_ptr<drawable_player> player, std::shared_ptr<Tscene> current_level);
 std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string file_name);
-
-Tplatform random_platform_generator(std::shared_ptr<Tscene> platform_container);
 bool border_refresh(WINDOW* gameplay_window, std::shared_ptr<Tscene> current_level);
 bool starting_screen();
+bool ending_screen();
+std::vector<std::string> fill_palette();
+void generate_frame(std::string* content, std::vector<std::string>* palette, unsigned int step, unsigned int height, unsigned int width);
+void screen_refresh(std::string* content);

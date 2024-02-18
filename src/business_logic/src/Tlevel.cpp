@@ -15,34 +15,46 @@ bool Tlevel::is_next_pixel_wall(Ientity::Movement inputed_movement, Tposition cu
     unsigned int character_index_1 = 0;
     unsigned int character_index_2 = 0;
     unsigned int character_index_3 = 0;
+    unsigned int helping_index_1 = 0;    //two helping indexes added for frog legs
+    unsigned int helping_index_2 = 0;
 
     switch(inputed_movement)
     {
         case Ientity::Movement::Up:
-            character_index_1 = (m_current_map_width) * (current_position.m_position_y - 2) + current_position.m_position_x;
+            character_index_1 = (m_current_map_width) * (current_position.m_position_y - 1) + current_position.m_position_x;
             character_index_2 = (m_current_map_width) * (current_position.m_position_y - 2) + current_position.m_position_x + 1;
             character_index_3 = (m_current_map_width) * (current_position.m_position_y - 2) + current_position.m_position_x + 2;
+            helping_index_1 = (m_current_map_width) * (current_position.m_position_y - 2) + current_position.m_position_x + 3;
+            helping_index_2 = (m_current_map_width) * (current_position.m_position_y - 1) + current_position.m_position_x + 4;
             break;
         case Ientity::Movement::Down:
             character_index_1 = (m_current_map_width) * (current_position.m_position_y + 1) + current_position.m_position_x;
             character_index_2 = (m_current_map_width) * (current_position.m_position_y + 1) + current_position.m_position_x + 1;
             character_index_3 = (m_current_map_width) * (current_position.m_position_y + 1) + current_position.m_position_x + 2;
+            helping_index_1 = (m_current_map_width) * (current_position.m_position_y + 1) + current_position.m_position_x + 3;
+            helping_index_2 = (m_current_map_width) * (current_position.m_position_y + 1) + current_position.m_position_x + 4;
             break;
         case Ientity::Movement::Left:
             character_index_1 = (m_current_map_width) * (current_position.m_position_y) + current_position.m_position_x - 1;
-            character_index_2 = (m_current_map_width) * (current_position.m_position_y - 1) + current_position.m_position_x - 1;
+            character_index_2 = (m_current_map_width) * (current_position.m_position_y - 1) + current_position.m_position_x - 2;
             character_index_3 = character_index_1;
+            helping_index_1 = character_index_1;
+            helping_index_2 = character_index_1;
             break;
         case Ientity::Movement::Right:
             character_index_1 = (m_current_map_width) * (current_position.m_position_y) + current_position.m_position_x + 3;
-            character_index_2 = (m_current_map_width) * (current_position.m_position_y - 1) + current_position.m_position_x + 3;
-            character_index_3 = character_index_1;
+            character_index_2 = (m_current_map_width) * (current_position.m_position_y) + current_position.m_position_x + 5;
+            character_index_3 = (m_current_map_width) * (current_position.m_position_y - 1) + current_position.m_position_x + 4;
+            helping_index_1 = character_index_1;
+            helping_index_2 = character_index_1;
             break;
     }
 
-    if((character_index_1 > 0 && map_layout[character_index_1] == ' ') &&
+    if((character_index_1 > 0 && map_layout[character_index_1] == ' ') &&     //collision checks
        (character_index_2 > 0 && map_layout[character_index_2] == ' ') &&
-       (character_index_3 > 0 && map_layout[character_index_3] == ' '))
+       (character_index_3 > 0 && map_layout[character_index_3] == ' ') &&
+       (helping_index_1 > 0 && map_layout[helping_index_1] == ' ') &&
+       (helping_index_2 > 0 && map_layout[helping_index_2] == ' '))
        {
         return false;
        }

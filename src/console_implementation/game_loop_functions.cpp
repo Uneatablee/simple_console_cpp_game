@@ -1,107 +1,125 @@
 #include "main_header.hpp"
 
+bool exit_value = false;  //condition of game_loops (game_loop with render, update and input_loop) working
+unsigned short speed_limiter = 10; //speed of map travelling down
+unsigned short map_speed_interval = 500; //after 500 game_loop iterations -> speeding up
 
 bool gameloop()
 {
+    starting_screen();
     unsigned int gameplay_window_height;
     unsigned int gameplay_window_width;
 
-    std::string map_name = "level_1_map.txt";
-    std::string map_layout = map_converter(map_name, &gameplay_window_height, &gameplay_window_width); //converting file and getting single string, height and width of gamepolay window
+    std::shared_ptr<Tscene> self_generating_level = std::make_shared<Tscene>(40, 140); //test width and height values
+    self_generating_level -> set_starting_position(Tposition(70,20));
 
-    std::shared_ptr<Ilevel> starting_level = std::make_shared<Tlevel>(map_layout, gameplay_window_height, gameplay_window_width);
-    starting_level -> set_starting_position(Tposition(20,20));
+    //windows setup
+    auto scoreboard_window = initial_window_scoreboard_output();
+    auto gameplay_window = initial_window_gameplay_output(self_generating_level, 40, 141);
 
-    WINDOW* gameplay_window;
-    WINDOW* scoreboard_window;
-    scoreboard_window = initial_window_scoreboard_output();
-    gameplay_window = initial_window_gameplay_output(starting_level,gameplay_window_height, gameplay_window_width);
+    //player setup
+    auto main_player = std::make_shared<drawable_player>(gameplay_window.get(), "main_player");
 
-    std::shared_ptr<drawable_player> main_player = std::make_shared<drawable_player>(gameplay_window, "main_player");
-    main_player -> assign_level(starting_level);
+    //main_player -> assign_level(starting_level);
+    main_player -> assign_level(self_generating_level);
 
+    //GAME LOOP <------------------->
+    std::thread input_process(input_processing, main_player); //--> extracted from game loop ---> its not blocking game updating
 
-
-
-    while(true)
+    while(!exit_value)
     {
-        input_processing(main_player);  // --->  get input_processing as separate thread later
-        update(gameplay_window, main_player); //--> one step forward all movement mechanics
+        exit_value = update(gameplay_window.get(),scoreboard_window.get(), main_player, self_generating_level); //--> one step forward all movement mechanics
 
-        //render(); --> rendering with delta time
+        //render(); --> rendering with delta time ---> colours and Ansi codes generator
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
+    std::cout <<"\nGame Over!\n";
 
-
-
-    delwin(gameplay_window);
-    delwin(scoreboard_window);
-
-
+    //clearing
+    input_process.join();
     return false;
 }
-
 
 bool input_processing(const std::shared_ptr<Ientity>& player)
 {
     int input;
-    bool exit = false;
+    bool only_side_movement_allowed = false; //blocking input while player is midair to prevent double jumping
+    unsigned int step_multiplier = 4;    //left and right step length
 
-    //while(!exit)
-    //{
+    while(!exit_value)
+    {
+        step_multiplier = 4;
+        only_side_movement_allowed = false;
         input = getchar();
+
+        if(player -> get_current_state() == Ientity::Air_state::Jumping || player -> get_current_state() == Ientity::Air_state::Falling)
+        {
+            only_side_movement_allowed = true;
+        }
+
         switch(input)
         {
             case 'W':
-                player -> move(Ientity::Movement::Up);
+                if(only_side_movement_allowed) break;
+                player -> set_air_state(Ientity::Air_state::Jumping);
                 break;
             case 'w':
-                player -> move(Ientity::Movement::Up);
+                if(only_side_movement_allowed) break;
+                player -> set_air_state(Ientity::Air_state::Jumping);
                 break;
-
-            case 'S':
-                player -> move(Ientity::Movement::Down);
-                break;
-            case 's':
-                player -> move(Ientity::Movement::Down);
-                break;
-
             case 'A':
-                player -> move(Ientity::Movement::Left);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Left);
+                    step_multiplier--;
+                }
                 break;
             case 'a':
-                player -> move(Ientity::Movement::Left);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Left);
+                    step_multiplier--;
+                }
                 break;
-
             case 'D':
-                player -> move(Ientity::Movement::Right);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Right);
+                    step_multiplier--;
+                }
                 break;
             case 'd':
-                player -> move(Ientity::Movement::Right);
+                while(step_multiplier > 0)
+                {
+                    player -> move(Ientity::Movement::Right);
+                    step_multiplier--;
+                }
                 break;
-            case 'p':
-                std::cout <<" , ";
-                std::cout << player ->get_current_position().m_position_x <<", " << player ->get_current_position().m_position_y;
             case char(27):
-                exit = true;
+                exit_value = true;
                 break;
             default:
                 break;
         }
-    //}
+    }
 
-    return exit;
+    return true;
 }
 
-WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, unsigned int height, unsigned int width)
+std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> initial_window_gameplay_output(
+    std::shared_ptr<Ilevel> p_current_level, unsigned int height, unsigned int width)
 {
-    WINDOW* new_window;
     const unsigned int startX = 1;
     const unsigned int startY = 1;
+    auto new_window = std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>(
+        newwin(height, width - 1, startY, startX),
+        [](WINDOW* win)
+        {
+            delwin(win);
+        });
 
-    new_window = newwin(height, width, startY, startX);
-    wborder(new_window, '|', '|', '-', '-', '+', '+', '+' , '+');
+    wborder(new_window.get(), '|', '|', '-', '-', '+', '+', '+', '+');
 
     std::istringstream map_layout(p_current_level -> get_current_map_layout());
     std::string temp_line;
@@ -109,43 +127,122 @@ WINDOW* initial_window_gameplay_output(std::shared_ptr<Ilevel> p_current_level, 
     int i = 0;
     while(getline(map_layout, temp_line))
     {
-        mvwprintw(new_window, i, 0, temp_line.c_str()); //replacing lines in window with current level's map layout
+        mvwprintw(new_window.get(), i, 0, temp_line.c_str()); //replacing lines in window with current level's map layout
         i++;
     }
 
-    wrefresh(new_window);
+    wrefresh(new_window.get());
     return new_window;
 }
 
-WINDOW* initial_window_scoreboard_output()
+std::unique_ptr<WINDOW, decltype(WINDOW_deleter)> initial_window_scoreboard_output()
 {
-    WINDOW* new_window;
-
     const unsigned int height = 40;
     const unsigned int width = 20;
     const unsigned int startX = 142;
     const unsigned int startY = 1;
 
-    new_window = newwin(height, width, startY, startX);
-    wborder(new_window, '|', '|', '-', '-', '+', '+', '+' , '+');
-    wrefresh(new_window);
+    auto new_window = std::unique_ptr<WINDOW, decltype(WINDOW_deleter)>(
+        newwin(height, width, startY, startX),
+        WINDOW_deleter);
+
+    wborder(new_window.get(), '|', '|', '-', '-', '+', '+', '+', '+');
+    mvwprintw(new_window.get(), 5, 8, "SCORE:");
+    wrefresh(new_window.get());
 
     return new_window;
 }
 
-void update(WINDOW* operating_window, std::shared_ptr<drawable_player> main_player)
+bool update(WINDOW* const operating_window,WINDOW* const scoreboard, std::shared_ptr<drawable_player> main_player, std::shared_ptr<Tscene> p_current_level)
 {
-    main_player -> draw(main_player -> get_current_position());
+    bool play_over = false;
+    static unsigned int counter = 0;
+    static int height_register = 0;
+    static unsigned int best_score = 0;
+
+    Ientity::Air_state current_air_state = main_player -> get_current_state();
+
+    switch(current_air_state)
+    {
+        case Ientity::Air_state::Jumping:
+            main_player -> jump();
+            break;
+        case Ientity::Air_state::Falling:
+            main_player -> fall();
+            break;
+        case Ientity::Air_state::Gravity:
+            main_player -> move(Ientity::Movement::Down);
+            break;
+        case Ientity::Air_state::None:
+            break;
+    }
+
+    if((main_player -> get_current_state()) == Ientity::Air_state::None &&
+       (main_player -> move(Ientity::Movement::Down)) == true)                  //constant check if falling is available
+       {
+            if(main_player -> move(Ientity::Movement::Down) == true)
+            {
+                main_player -> set_air_state(Ientity::Air_state::Falling);
+            }
+            else
+            {
+                main_player -> set_air_state(Ientity::Air_state::Gravity);       //constant falling if not on wall
+            }
+       }
+
+    if((main_player -> get_current_jump_velocity() >1) && (main_player -> get_current_state() == Ientity::Air_state::Gravity))
+    {
+        main_player -> set_air_state(Ientity::Air_state::Falling);
+    }
+
+    //map random generating and sliding down
+    //output
+    p_current_level -> draw(operating_window);
+
+    bool movement_down = false;
+    if(counter % speed_limiter == 0)  //once in a n loops platforms moving down. Add constant miliseconds interval later (delta time).
+    {
+        movement_down = true;
+        height_register++;
+    }
+
+    p_current_level -> level_movement_down(operating_window, movement_down);
+    counter++;
+
+    if(counter > map_speed_interval && speed_limiter >= 0)
+    {
+        speed_limiter -= 2;
+        map_speed_interval *= 2;
+    }
+
+    main_player -> draw();
+
+    if(main_player -> get_current_position().m_position_y > p_current_level -> get_current_map_height() + 1)
+    {
+        play_over = true;
+    }
+    unsigned int current_player_height =  (p_current_level -> get_current_map_height()) - (main_player -> get_current_position().m_position_y);
+
+    if(current_player_height + height_register > best_score)
+    {
+        best_score = current_player_height + height_register;
+        mvwprintw(scoreboard, 6, 8, (std::to_string(best_score)).c_str());
+        wrefresh(scoreboard);
+    }
+
+    border_refresh(operating_window, p_current_level);
     wmove(operating_window, 0, 0);
     wrefresh(operating_window);
+    return play_over;
 }
 
-std::string map_converter(std::string p_file_name, unsigned int* map_height, unsigned int* map_width) //Converting map layout from .txt file to single string
+std::tuple<std::string, unsigned int, unsigned int> map_converter(std::string p_file_name) //Converting map layout from .txt file to single string
 {
     std::ifstream file(p_file_name);
     if(!file)
     {
         std::cout << "Error reading map file";
+        throw std::exception();
     }
 
     unsigned int width = 0;
@@ -163,8 +260,143 @@ std::string map_converter(std::string p_file_name, unsigned int* map_height, uns
         map_converted += single_line + "\n";
         height++;
     }
-    *map_width = width+1;
-    *map_height = height;
+    width = width + 1; //for additional endline
     file.close();
-    return map_converted;
+    return {map_converted, height, width};
 }
+
+bool border_refresh(WINDOW* gameplay_window, std::shared_ptr<Tscene> p_current_level)
+{
+    std::string frame(p_current_level -> get_current_map_width(), '#');
+    mvwprintw(gameplay_window, p_current_level -> get_current_map_height() - 1, 0, frame.c_str());
+    mvwprintw(gameplay_window, 0, 0, frame.c_str());
+    return true;
+}
+
+bool starting_screen()
+{
+    const unsigned int startX = 1;
+    const unsigned int startY = 1;
+    auto new_window = std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>(
+        newwin(40, 140 - 1, startY, startX),
+        [](WINDOW* win)
+        {
+            delwin(win);
+        });
+
+    wborder(new_window.get(), '|', '|', '-', '-', '+', '+', '+', '+');
+
+    std::vector<std::string> logo_container{};
+    logo_container.push_back("       __   __    __  .___  ___. .______");
+    logo_container.push_back("      |  | |  |  |  | |   \\/   | |   _  \\");
+    logo_container.push_back("      |  | |  |  |  | |  \\  /  | |  |_)  | ");
+    logo_container.push_back(".--.  |  | |  |  |  | |   \\/|  | |   ___/  ");
+    logo_container.push_back("|  `--'  | |  `--'  | |  |  |  | |  |  ");
+    logo_container.push_back(" \\______/   \\______/  |__|  |__| | _| ");
+
+    logo_container.push_back("  _______ .______        ______     _______ ");
+    logo_container.push_back(" |   ____||   _  \\      /  __  \\   /  _____|");
+    logo_container.push_back(" |  |__   |  |_)  |    |  |  |  | |  |  __");
+    logo_container.push_back(" |   __|  |      /     |  |  |  | |  | |_ |");
+    logo_container.push_back(" |  |     |  |\\  \\----.|  `--'  | |  |__| |");
+    logo_container.push_back(" |__|     | _| `._____| \\______/   \\______|");
+
+    int i = 0;
+    for(auto elem : logo_container)
+    {
+        mvwprintw(new_window.get(), 14 + i, 58, elem.c_str());
+        i++;
+        wrefresh(new_window.get());
+    }
+
+    for(int j = 0; j < 50; j++)
+    {
+        i = 0;
+        for(auto elem : logo_container)
+        {
+            std::string temp(elem.length(),' ');
+            mvwprintw(new_window.get(), 14 + i, 58 - j + 1, temp.c_str());
+            mvwprintw(new_window.get(), 14 + i, 58 - j, elem.c_str());
+            i++;
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        }
+        wrefresh(new_window.get());
+    }
+
+    std::vector<std::string> countdown_container{};
+    countdown_container.push_back(" ____");
+    countdown_container.push_back("|___  \\");
+    countdown_container.push_back(" ___) | ");
+    countdown_container.push_back("|__  < ");
+    countdown_container.push_back(" ___) |  ");
+    countdown_container.push_back("|____/  ");
+
+    countdown_container.push_back(" ___  ");
+    countdown_container.push_back("|__ \\ ");
+    countdown_container.push_back("   ) |");
+    countdown_container.push_back("  / / ");
+    countdown_container.push_back(" / /_ ");
+    countdown_container.push_back("|____|");
+
+    countdown_container.push_back(" __");
+    countdown_container.push_back("/_ |");
+    countdown_container.push_back(" | |");
+    countdown_container.push_back(" | |");
+    countdown_container.push_back(" | |");
+    countdown_container.push_back(" |_|");
+
+    std::string cleaner("          ");
+
+    int line = 0;
+    for(int i = 0; i<3; i++)
+    {
+        for(int j = 0; j < 6 ; j++)
+        {
+            mvwprintw(new_window.get(), 17 + j, 100, cleaner.c_str());
+            mvwprintw(new_window.get(), 17 + j, 100, countdown_container[line].c_str());
+            line++;
+        }
+        wrefresh(new_window.get());
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
+    }
+    return true;
+}
+
+bool ending_screen()
+{
+    std::string background_colours;
+    struct colour
+    {
+    public:
+        unsigned int red;
+        unsigned int green;
+        unsigned int blue;
+
+        colour(unsigned int r, unsigned int g, unsigned int b) : red(r), green(g), blue(b)
+        {
+
+        }
+
+        std::string get_content()
+        {
+            return std::string("\x1b[48;2;" + std::to_string(red) +";"+ std::to_string(green) +";"+ std::to_string(blue) +"m"+"  "+"\1xb[0m");
+        }
+    };
+
+
+    for(int i = 0; i < 40; i++)
+    {
+        for(int j = 0; j < 70; j++)
+        {
+            background_colours += colour(255, 0, j*6).get_content();
+        }
+        background_colours += + "\n";
+    }
+
+    std::cout << std::flush;
+    system("clear");
+    std::cout << background_colours;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+}
+

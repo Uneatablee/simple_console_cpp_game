@@ -19,8 +19,6 @@ int main()
 
     gameloop(); //--> gameloop with gameplaywindow and player
 
-    int i = 0;
-    if(i == 1)
     {
         std::cout << std::endl;
     }
